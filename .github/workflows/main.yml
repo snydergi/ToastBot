@@ -1,0 +1,47 @@
+name: Build ROS2 Jazzy Packages
+
+# Pushing to main or PR targeting main
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up ROS2 environment
+      - name: Set up ROS2 Jazzy
+        uses: ros-tooling/setup-ros@v0
+        with:
+          version: jazzy
+          install-source: false # Set to true if you want to install from source
+
+      # # Install ROS2 dependencies
+      # - name: Install dependencies
+      #   run: |
+      #     sudo apt-get update
+      #     rosdep update
+      #     rosdep install --from-paths src --ignore-src -r -y
+
+      # Build the ROS2 workspace
+      - name: Build workspace
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          colcon build
+
+      # Run tests (optional)
+      - name: Run tests
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          colcon test
+          colcon test-result --verbose
