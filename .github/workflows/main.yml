@@ -18,10 +18,10 @@ jobs:
       # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
-
+            
       # Set up ROS2 environment
       - name: Set up ROS2 Jazzy
-        uses: ros-tooling/setup-ros@v0
+        uses: ros-tooling/setup-ros@0.7.9
         with:
           version: jazzy
           install-source: false # Set to true if you want to install from source
