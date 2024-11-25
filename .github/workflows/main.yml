@@ -43,6 +43,7 @@ jobs:
             export ROS_DISTRO=jazzy
             rosdep update --rosdistro jazzy
             rosdep install --from-paths . --ignore-src -r -y
+            source /opt/ros/jazzy/setup.bash
       
       - name: Build and Test
         uses: ros-tooling/action-ros-ci@v0.3
