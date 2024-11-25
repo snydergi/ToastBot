@@ -34,16 +34,14 @@ jobs:
       # Set up ROS2 environment
       - name: Set up ROS2
         uses: ros-tooling/setup-ros@0.7.9
-        # with:
-        #   required-ros-distributions: jazzy
-        #   use-ros2-testing: true
+        with:
+          required-ros-distributions: jazzy
           
       - name: Install ROS dependencies
         run: |
             export ROS_DISTRO=jazzy
             rosdep update --rosdistro jazzy
             rosdep install --from-paths . --ignore-src -r -y
-            source /opt/ros/jazzy/setup.bash
       
       - name: Build and Test
         uses: ros-tooling/action-ros-ci@v0.3
