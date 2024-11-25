@@ -40,7 +40,7 @@ jobs:
         uses: ros-tooling/setup-ros@0.7.9
         with:
           version: jazzy
-          install-source: false # Set to true if you want to install from source
+          install-source: false
 
       # Install ROS2 dependencies
       - name: Install ROS dependencies
@@ -57,6 +57,5 @@ jobs:
       # Run tests (optional)
       - name: Test ROS2 workspace with colcon
         run: |
-          colcon test --base-paths .
-          colcon test-result --verbose
-          cat log/latest_test/moveitapi/stdout_stderr.log
+          colcon test --base-paths . --event-handlers console_direct+ log+
+          colcon test-result --verbose --event-handlers console_direct+ log+ 
