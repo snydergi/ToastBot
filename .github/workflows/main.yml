@@ -40,8 +40,7 @@ jobs:
         uses: ros-tooling/setup-ros@0.7.9
         with:
           required-ros-distributions: jazzy
-          install-source: true
-      - run: source /opt/ros/jazzy/setup.bash
+          use-ros2-testing: true
       
       - name: build and test
         uses: ros-tooling/action-ros-ci@v0.3
@@ -52,6 +51,7 @@ jobs:
       # Install ROS2 dependencies
       - name: Install ROS dependencies
         run: |
+          source /opt/ros/jazzy/setup.bash
           export ROS_DISTRO=jazzy
           rosdep update --rosdistro jazzy
           rosdep install --from-paths . --ignore-src -r -y
