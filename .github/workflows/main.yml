@@ -37,7 +37,10 @@ jobs:
       - name: Build workspace
         run: |
           colcon build
+  test:
+    runs-on: ubuntu-latest
 
+    steps:
       # Run tests (optional)
       - name: Run tests
         run: |
