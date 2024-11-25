@@ -13,6 +13,8 @@ on:
 jobs:
   colcon_build_and_test:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:noble
 
     steps:
       - name: Set up SSH key
@@ -39,6 +41,7 @@ jobs:
           
       - name: Install ROS dependencies
         run: |
+            source /opt/ros/jazzy/setup.bash
             export ROS_DISTRO=jazzy
             rosdep update --rosdistro jazzy
             rosdep install --from-paths . --ignore-src -r -y
