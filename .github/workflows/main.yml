@@ -37,11 +37,11 @@ jobs:
         with:
           required-ros-distributions: jazzy
           use-ros2-testing: true
+      - run: source /opt/ros/jazzy/setup.bash
           
           # Install ROS2 dependencies
       - name: Install ROS dependencies
         run: |
-            source /opt/ros/jazzy/setup.bash
             export ROS_DISTRO=jazzy
             rosdep update --rosdistro jazzy
             rosdep install --from-paths . --ignore-src -r -y
