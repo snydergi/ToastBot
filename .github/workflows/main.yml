@@ -40,7 +40,6 @@ jobs:
           
       - name: Install ROS dependencies
         run: |
-            source /opt/ros/jazzy/setup.bash
             export ROS_DISTRO=jazzy
             rosdep update --rosdistro jazzy
             rosdep install --from-paths . --ignore-src -r -y
@@ -59,5 +58,5 @@ jobs:
       # # Run tests (optional)
       # - name: Test ROS2 workspace with colcon
       #   run: |
-      #     colcon test --base-paths . --event-handlers console_direct+ log+
-      #     colcon test-result --verbose --event-handlers console_direct+ log+ 
+      #     colcon test --base-paths .
+      #     colcon test-result --verbose
