@@ -7,9 +7,11 @@ This repository depends on the [moveit API](https://github.com/ME495-EmbeddedSys
 When first cloning the repo:
 ```bash
 # Ensure you're cloning in your ws/ directory
-git clone git@github.com:snydergi/ToastBot.git
-# Absolute path used here to explicitly show path
-cd ~/ws/src/ToastBot
-git submodule init
+git clone --recurse-submodules git@github.com:snydergi/ToastBot.git
+```
+
+To update the submodules when there are changes made to their repositories run:
+```bash
+git submodule init # If you're missing submodule
 git submodule update
 ```
