@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Set up SSH key
         run: |
+          apt-get -yq update
+          apt-get -yq install ssh
           mkdir -p ~/.ssh
           echo "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
