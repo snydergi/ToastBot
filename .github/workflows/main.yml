@@ -29,6 +29,7 @@ jobs:
       # Install ROS2 dependencies
       - name: Install dependencies
         run: |
+          sudo apt-get update
           rosdep update
           rosdep install --from-paths . --ignore-src -r -y
 
