@@ -32,16 +32,15 @@ jobs:
           fetch-depth: 0
 
       # Set up ROS2 environment
-      - name: Set up ROS2 Jazzy
+      - name: Set up ROS2
         uses: ros-tooling/setup-ros@0.7.9
-        with:
-          required-ros-distributions: jazzy
-          use-ros2-testing: true
-      - run: source /opt/ros/jazzy/setup.bash
+        # with:
+        #   required-ros-distributions: jazzy
+        #   use-ros2-testing: true
           
-          # Install ROS2 dependencies
       - name: Install ROS dependencies
         run: |
+            source /opt/ros/jazzy/setup.bash
             export ROS_DISTRO=jazzy
             rosdep update --rosdistro jazzy
             rosdep install --from-paths . --ignore-src -r -y
