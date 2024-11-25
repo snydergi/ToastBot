@@ -45,6 +45,7 @@ jobs:
       # Install ROS2 dependencies
       - name: Install dependencies
         run: |
+          export ROS_DISTRO=jazzy
           rosdep update --rosdistro jazzy
           rosdep install --from-paths . --ignore-src -r -y
 
