@@ -10,4 +10,6 @@ When first cloning the repo:
 git clone git@github.com:snydergi/ToastBot.git
 # Absolute path used here to explicitly show path
 cd ~/ws/src/ToastBot
-git
+git submodule init
+git submodule update
+```
