@@ -48,15 +48,3 @@ jobs:
         uses: ros-tooling/action-ros-ci@v0.3
         with:
           target-ros2-distro: 'jazzy'
-
-
-      # # Build the ROS2 workspace
-      # - name: Build ROS2 workspace with colcon
-      #   run: |
-      #     colcon build --base-paths .
-
-      # # Run tests (optional)
-      # - name: Test ROS2 workspace with colcon
-      #   run: |
-      #     colcon test --base-paths .
-      #     colcon test-result --verbose
