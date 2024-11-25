@@ -22,13 +22,13 @@ jobs:
           apt-get -yq update
           apt-get -yq install ssh
 
-      # - name: Set up SSH key
-      #   run: |
-      #     mkdir -p ~/.ssh
-      #     echo "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
-      #     chmod 600 ~/.ssh/id_rsa
-      #     ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-      #     chmod 644 ~/.ssh/known_hosts
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
       # # Checkout the repository
       # - name: Checkout repository
@@ -44,7 +44,7 @@ jobs:
         uses: ros-tooling/setup-ros@0.7.9
         with:
           required-ros-distributions: jazzy
-          
+
       # - name: Install ROS dependencies
       #   run: |
       #       source /opt/ros/jazzy/setup.bash
