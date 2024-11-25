@@ -31,38 +31,34 @@ jobs:
           ssh-key: "${{secrets.SSH_PRIVATE_KEY}}"
           fetch-depth: 0
 
-      - name: Initialize and update submodules
-        run: |
-          git submodule update --init --recursive
-
       # Set up ROS2 environment
       - name: Set up ROS2 Jazzy
         uses: ros-tooling/setup-ros@0.7.9
         with:
           required-ros-distributions: jazzy
           use-ros2-testing: true
-      
-      - name: build and test
-        uses: ros-tooling/action-ros-ci@v0.3
-        with:
-          package-name: 'moveitapi'
-          target-ros2-distro: 'jazzy'
-
-      # Install ROS2 dependencies
+          
+          # Install ROS2 dependencies
       - name: Install ROS dependencies
         run: |
-          source /opt/ros/jazzy/setup.bash
-          export ROS_DISTRO=jazzy
-          rosdep update --rosdistro jazzy
-          rosdep install --from-paths . --ignore-src -r -y
+            source /opt/ros/jazzy/setup.bash
+            export ROS_DISTRO=jazzy
+            rosdep update --rosdistro jazzy
+            rosdep install --from-paths . --ignore-src -r -y
+      
+      - name: Build and Test
+        uses: ros-tooling/action-ros-ci@v0.3
+        with:
+          target-ros2-distro: 'jazzy'
 
-      # Build the ROS2 workspace
-      - name: Build ROS2 workspace with colcon
-        run: |
-          colcon build --base-paths .
 
-      # Run tests (optional)
-      - name: Test ROS2 workspace with colcon
-        run: |
-          colcon test --base-paths . --event-handlers console_direct+ log+
-          colcon test-result --verbose --event-handlers console_direct+ log+ 
+      # # Build the ROS2 workspace
+      # - name: Build ROS2 workspace with colcon
+      #   run: |
+      #     colcon build --base-paths .
+
+      # # Run tests (optional)
+      # - name: Test ROS2 workspace with colcon
+      #   run: |
+      #     colcon test --base-paths . --event-handlers console_direct+ log+
+      #     colcon test-result --verbose --event-handlers console_direct+ log+ 
