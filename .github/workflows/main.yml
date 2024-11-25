@@ -18,7 +18,9 @@ jobs:
       # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
-            
+        with:
+          submodules: recursive
+
       # Set up ROS2 environment
       - name: Set up ROS2 Jazzy
         uses: ros-tooling/setup-ros@0.7.9
