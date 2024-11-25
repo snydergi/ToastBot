@@ -35,10 +35,10 @@ jobs:
       # Build the ROS2 workspace
       - name: Build workspace
         run: |
-          colcon build
+          colcon build --base-paths .
 
       # Run tests (optional)
       - name: Run tests
         run: |
-          colcon test
+          colcon test --base-paths .
           colcon test-result --verbose
