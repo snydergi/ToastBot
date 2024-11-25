@@ -17,10 +17,13 @@ jobs:
       image: ubuntu:noble
 
     steps:
-      - name: Set up SSH key
+      - name: Install Linux dependencies
         run: |
           apt-get -yq update
           apt-get -yq install ssh
+
+      - name: Set up SSH key
+        run: |
           mkdir -p ~/.ssh
           echo "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
@@ -31,9 +34,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          submodules: recursive
           ssh-key: "${{secrets.SSH_PRIVATE_KEY}}"
-          fetch-depth: 0
+      
+      - name: Update Git Submodules
+        run: git submodule update --init --recursive
 
       # Set up ROS2 environment
       - name: Set up ROS2
