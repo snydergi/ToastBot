@@ -36,12 +36,10 @@ jobs:
       # Build the ROS2 workspace
       - name: Build workspace
         run: |
-          source /opt/ros/jazzy/setup.bash
           colcon build
 
       # Run tests (optional)
       - name: Run tests
         run: |
-          source /opt/ros/jazzy/setup.bash
           colcon test
           colcon test-result --verbose
