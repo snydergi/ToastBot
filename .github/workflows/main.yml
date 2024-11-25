@@ -45,7 +45,7 @@ jobs:
       # Install ROS2 dependencies
       - name: Install dependencies
         run: |
-          rosdep update
+          rosdep update --rosdistro jazzy
           rosdep install --from-paths . --ignore-src -r -y
 
       # Build the ROS2 workspace
