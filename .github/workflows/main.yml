@@ -11,7 +11,7 @@ on:
 
 
 jobs:
-  build:
+  colcon_build_and_test:
     runs-on: ubuntu-latest
 
     steps:
@@ -43,19 +43,19 @@ jobs:
           install-source: false # Set to true if you want to install from source
 
       # Install ROS2 dependencies
-      - name: Install dependencies
+      - name: Install ROS dependencies
         run: |
           export ROS_DISTRO=jazzy
           rosdep update --rosdistro jazzy
           rosdep install --from-paths . --ignore-src -r -y
 
       # Build the ROS2 workspace
-      - name: Build workspace
+      - name: Build ROS2 workspace with colcon
         run: |
           colcon build --base-paths .
 
       # Run tests (optional)
-      - name: Run tests
+      - name: Test ROS2 workspace with colcon
         run: |
           colcon test --base-paths .
           colcon test-result --verbose
