@@ -29,7 +29,7 @@ jobs:
         with:
           submodules: recursive
           ssh-key: "${{secrets.SSH_PRIVATE_KEY}}"
-
+          fetch-depth: 0
 
       - name: Initialize and update submodules
         run: |
