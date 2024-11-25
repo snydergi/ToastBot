@@ -59,3 +59,4 @@ jobs:
         run: |
           colcon test --base-paths .
           colcon test-result --verbose
+          cat log/latest_test/moveitapi/stdout_stderr.log
