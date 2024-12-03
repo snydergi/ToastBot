@@ -40,6 +40,11 @@ April Tag Size:
 ## Knife Handle
 Two pieces that enclose around the actual knife handle to make it a rectangular prism. 
 
+Printed Handle Dimensions:
+ - Length:
+ - Width:
+ - Height: 
+
 ## Toaster Stand
 An elevated stand (toaster box on its side is the perfect height) for the toaster. It will sit on the table close to the arm and off to the left (when facing the robot's forward direction)
 Dimensions:
@@ -52,17 +57,23 @@ April Tag Size:
 ## Lever Platform
 A platform or slab to attach to the toaster lever to make it easier to manipulate with the end-effector. Doesn't need an April tag but might be worth trying to fit a small one on there.
 Lever Dimensions:
-   - Length:
-   - Width:
-   - Height:
+   - Length: 35 mm
+   - Width: 20.4
+   - Height: 11.5 mm
 
 April Tag Size: 
 
 ## Toaster Dial
-A dial that should press-fit or attach to the toaster dial so it's easier for the end-effector to manipulate it.
-Dimensions:
-  - Diameter: 
-  - Length:
+A dial that should press-fit or attach to the toaster dials so it's easier for the end-effector to manipulate it.
+Dial-Lever Spacing: 43 mm
+Toaster Dial Dimensions:
+  - Length: 40 mm
+  - Width: 10 mm
+  - Height: 10 mm
+
+Printed Dial Dimensions:
+ - Diameter:
+ - Length:
 
 April Tag Size: 
 
