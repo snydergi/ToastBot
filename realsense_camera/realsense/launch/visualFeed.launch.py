@@ -76,14 +76,14 @@ def generate_launch_description():
         ),
 
         # Uncomment and configure these nodes as needed
-        Node(
-            package="rviz2",
-            executable="rviz2",
-            arguments=[
-                '-d', tags_tf_rviz
-            ],
-            output="screen",
-        ),
+        # Node(
+        #     package="rviz2",
+        #     executable="rviz2",
+        #     arguments=[
+        #         '-d', tags_tf_rviz
+        #     ],
+        #     output="screen",
+        # ),
         # Node(
         #     package="realsense",
         #     executable="simpleDetection",
@@ -101,11 +101,11 @@ def generate_launch_description():
             parameters=[tags_yaml]
         ),
         # AprilTags detection node
-        # Node(
-        #     package="realsense",
-        #     executable="visualizeFeed",
-        #     output="screen",
-        # )
+        Node(
+            package="realsense",
+            executable="visualizeFeed",
+            output="screen",
+        )
                 # Node(
         #     package="realsense",
         #     executable="table",
