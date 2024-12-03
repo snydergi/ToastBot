@@ -11,7 +11,7 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     # Get the package share directory
     pkg_share = FindPackageShare(package='realsense_camera').find('realsense')
-    tags_yaml = os.path.join(pkg_share, 'config/tags.yaml')
+    tags_yaml = os.path.join(pkg_share, 'cfg', 'config/tags.yaml')
     pcl_rviz = os.path.join(pkg_share, 'config/pcl.rviz')
     tags_tf_rviz = os.path.join(pkg_share, 'config/tags_tf.rviz')
 
