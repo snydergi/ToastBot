@@ -13,7 +13,7 @@ def generate_launch_description():
     pkg_share = FindPackageShare(package='realsense_camera').find('realsense')
     tags_yaml = os.path.join(pkg_share, 'config/tags.yaml')
     pcl_rviz = os.path.join(pkg_share, 'config/pcl.rviz')
-
+    tags_tf_rviz = os.path.join(pkg_share, 'config/tags_tf.rviz')
 
     # Combine all actions into a LaunchDescription
     return LaunchDescription([
@@ -63,8 +63,7 @@ def generate_launch_description():
             package="rviz2",
             executable="rviz2",
             arguments=[
-                "-d",
-                pcl_rviz
+                '-d', tags_tf_rviz
             ],
             output="screen",
         ),
@@ -89,12 +88,15 @@ def generate_launch_description():
             remappings=[
                 ('image_rect', '/camera/camera/color/image_raw'),
                 ('camera_info', '/camera/camera/color/image_raw')
+            ],
+            arguments=[
+                '--params-file', tags_yaml
             ]
         ),
         # AprilTags detection node
-        Node(
-            package="realsense",
-            executable="apriltagsDetection",
-            output="screen",
-        )
+        # Node(
+        #     package="realsense",
+        #     executable="apriltagsDetection",
+        #     output="screen",
+        # )
     ])
