@@ -37,8 +37,11 @@ Dimensions:
 
 April Tag Size:
 
+## Knife Handle
+Two pieces that enclose around the actual knife handle to make it a rectangular prism. 
+
 ## Toaster Stand
-An elevated stand (toaster box on it's side is perfect height) for the toaster. It will sit on the table close to the arm and off to the left (when facing the robot's forward direction)
+An elevated stand (toaster box on its side is the perfect height) for the toaster. It will sit on the table close to the arm and off to the left (when facing the robot's forward direction)
 Dimensions:
   - Length:
   - Width:
@@ -47,7 +50,7 @@ Dimensions:
 April Tag Size: 
 
 ## Lever Platform
-A platform or slab to attach to the toaster lever to make it easier to manipulate with the end-effector. Doesn't need an april tag but might be worth trying to fit a small one on there.
+A platform or slab to attach to the toaster lever to make it easier to manipulate with the end-effector. Doesn't need an April tag but might be worth trying to fit a small one on there.
 Lever Dimensions:
    - Length:
    - Width:
