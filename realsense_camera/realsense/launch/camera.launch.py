@@ -11,7 +11,7 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     # Get the package share directory
     pkg_share = FindPackageShare(package='realsense_camera').find('realsense')
-    tags_yaml = os.path.join(pkg_share, 'config/tags.yaml')
+    tags_yaml = os.path.join(pkg_share, 'cfg','config/tags.yaml')
     pcl_rviz = os.path.join(pkg_share, 'config/pcl.rviz')
 
 
@@ -58,16 +58,15 @@ def generate_launch_description():
             }.items()
         ),
 
-        # Uncomment and configure these nodes as needed
-        Node(
-            package="rviz2",
-            executable="rviz2",
-            arguments=[
-                "-d",
-                pcl_rviz
-            ],
-            output="screen",
-        ),
+        # Node(
+        #     package="rviz2",
+        #     executable="rviz2",
+        #     arguments=[
+        #         "-d",
+        #         pcl_rviz
+        #     ],
+        #     output="screen",
+        # ),
         Node(
             package="realsense",
             executable="table",
@@ -88,8 +87,9 @@ def generate_launch_description():
             output='screen',
             remappings=[
                 ('image_rect', '/camera/camera/color/image_raw'),
-                ('camera_info', '/camera/camera/color/image_raw')
-            ]
+                ('camera_info', '/camera/camera/color/camera_info')
+            ],
+            parameters=[tags_yaml]  # Use the path to your tags.yaml file
         ),
         # AprilTags detection node
         Node(
