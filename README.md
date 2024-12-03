@@ -34,6 +34,7 @@ Dimensions:
  -  Slot Height:
  -  Slot Spacing:
  -  Number of Slots:
+
 April Tag Size:
 
 ## Toaster Stand
@@ -42,6 +43,7 @@ Dimensions:
   - Length:
   - Width:
   - Height:
+
 April Tag Size: 
 
 ## Lever Platform
@@ -50,6 +52,7 @@ Lever Dimensions:
    - Length:
    - Width:
    - Height:
+
 April Tag Size: 
 
 ## Toaster Dial
