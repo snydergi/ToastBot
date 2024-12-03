@@ -15,3 +15,6 @@ To update the submodules when there are changes made to their repositories run:
 git submodule init # If you're missing submodule
 git submodule update
 ```
+
+# Resources
+[April Tag Generator](https://chaitanyantr.github.io/apriltag.html)
