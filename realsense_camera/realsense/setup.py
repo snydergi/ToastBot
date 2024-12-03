@@ -22,7 +22,7 @@ setup(
     entry_points={
         'console_scripts': [
             'table = realsense.tablefinder:table_entry',
-            'yolo = realsense.yoloDetection:main'
+            'yolo = realsense.simpleDetection:main'
         ],
     },
 )
