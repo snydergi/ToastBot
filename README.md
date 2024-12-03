@@ -18,3 +18,23 @@ git submodule update
 
 # Resources
 [April Tag Generator](https://chaitanyantr.github.io/apriltag.html)
+
+# CAD List
+Each part should have a location for an april tag to be attached to it so we can locate it with the camera. Since we know the geometry of all the fixtures and parts we can hard-code those transformations and dynamically locate their respective tags.
+## Bread End-Effector
+Thick, long prongs that resemble chopsticks so we can grab the bread from the holder and the toaster with quite some Z offset. The end-effector doesn't need an april tag.
+
+## Loaf Holder
+A holder with several slots for bread to be placed into. This is for pre-toasted bread and we can start with just 2 slots filled but we should have several slots to pick from.
+
+## Toaster Stand
+An elevated stand (toaster box on it's side is perfect height) for the toaster. It will sit on the table close to the arm and off to the left (when facing the robot's forward direction)
+
+## Lever Platform
+A platform or slab to attach to the toaster lever to make it easier to manipulate with the end-effector. Doesn't need an april tag but might be worth trying to fit a small one on there.
+
+## Toaster Dial
+A dial that should press-fit or attach to the toaster dial so it's easier for the end-effector to manipulate it.
+
+## Plate Fixture
+A fixture to hold the plate and keep it on the table. This should have an april tag to locate it.
