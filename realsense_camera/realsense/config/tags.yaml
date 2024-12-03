@@ -12,3 +12,6 @@ apriltag:
       threads: 2
       decimate: 2.0
       blur: 0.8
+
+    parameters:
+    - approximate_sync: true
