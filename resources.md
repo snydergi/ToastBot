@@ -1,1 +1,0 @@
-[YOLO ROS Support](https://github.com/mgonzs13/yolo_ros)
