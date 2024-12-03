@@ -69,8 +69,8 @@ April Tag Size:
 ## Plate Fixture
 A fixture to hold the plate and keep it on the table. This should have an april tag to locate it.
 Toast Dimensions:
-  - Length:
-  - Width:
-  - Height:
+  - Length: 133 mm
+  - Width: 110 mm
+  - Height: 20 mm
 
 April Tag Size: 
