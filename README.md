@@ -85,3 +85,27 @@ Toast Dimensions:
   - Height: 20 mm
 
 April Tag Size: 
+- Lever Platform
+    - Length: 30 mm
+    - Width: 15 mm
+
+- Plate Fixture
+    - Length: 125 mm
+    - Width: 105 mm
+
+- Knife Handle
+    - Length: 30 mm
+    - Width: 30 mm
+
+- Toaster
+    - Length: 20 mm - 12.5 mm
+    - Width: 20 mm - 12.5 mm
+
+- Plate
+    - Length: 30 mm
+    - Width: 30 mm
+
+Stretch
+- Lever Dial
+  - Length: 35 mm
+  - Width: 10 mm
