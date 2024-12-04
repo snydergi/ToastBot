@@ -55,7 +55,6 @@ def generate_launch_description():
             description="Enable point cloud generation."
         ),
 
-        # Include the RealSense2 Camera launch file
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 PathJoinSubstitution(
@@ -70,12 +69,9 @@ def generate_launch_description():
                 "depth_module.profile": "1280x720x30",
                 "rgb_camera.profile": "1280x720x30",
                 "enable_sync": "true",
-                # "align_depth": LaunchConfiguration("align_depth"),
-                # "pointcloud.enable": LaunchConfiguration("pointcloud.enable"),
             }.items()
         ),
 
-        # Uncomment and configure these nodes as needed
         Node(
             package="rviz2",
             executable="rviz2",
@@ -84,11 +80,6 @@ def generate_launch_description():
             ],
             output="screen",
         ),
-        # Node(
-        #     package="realsense",
-        #     executable="simpleDetection",
-        #     output="screen",
-        # ),
         Node(
             package='apriltag_ros',
             executable='apriltag_node',
@@ -101,17 +92,9 @@ def generate_launch_description():
             parameters=[tags_yaml]
         ),
         # AprilTags detection node
-        # Node(
-        #     package="realsense",
-        #     executable="visualizeFeed",
-        #     output="screen",
-        # )
-                # Node(
-        #     package="realsense",
-        #     executable="table",
-        #     output="screen",
-        #     remappings=[
-        #         ("pcl_handler", "/camera/camera/depth/color/points"),
-        #     ],
-        # ),
+        Node(
+            package="realsense",
+            executable="apriltagTracker",
+            output="screen",
+        )
     ])

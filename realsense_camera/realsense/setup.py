@@ -25,7 +25,7 @@ setup(
             'table = realsense.tablefinder:table_entry',
             'simpleDetection = realsense.simpleDetection:main',
             'visualizeFeed = realsense.visualizeFeed:main',
-            'apriltagsTracker = realsense.apriltagsTracker:main'
+            'apriltagTracker = realsense.apriltagTracker:main'
         ],
     },
 )
