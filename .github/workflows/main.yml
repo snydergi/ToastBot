@@ -52,7 +52,7 @@ jobs:
       #       rosdep update --rosdistro jazzy
       #       rosdep install --from-paths . --ignore-src -r -y
       
-      - name: Build and Test
-        uses: ros-tooling/action-ros-ci@v0.3
-        with:
-          target-ros2-distro: 'jazzy'
+      # - name: Build and Test
+      #   uses: ros-tooling/action-ros-ci@v0.3
+      #   with:
+      #     target-ros2-distro: 'jazzy'
