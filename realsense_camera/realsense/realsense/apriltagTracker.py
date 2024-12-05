@@ -57,7 +57,7 @@ class TfFrameListener(Node):
             target_frame (str): The name of the target frame to transform to.
 
         Returns:
-            TransformStamped: The transformation matrix as a TransformStamped message, or None if unavailable.
+            TransformStamped: The transformation matrix as a TransformStamped message
         """
         try:
             # Lookup transformation from target frame to camera frame
@@ -73,7 +73,7 @@ class TfFrameListener(Node):
 
 def main():
     """
-    Main function to initialize the node and start spinning.
+    Init Main function to initialize the node and start spinning.
 
     This function sets up the node, spins it to handle callbacks, and gracefully shuts down.
     """
