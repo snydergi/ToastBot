@@ -43,12 +43,16 @@ jobs:
         with:
           required-ros-distributions: jazzy
 
-      # - name: Install ROS dependencies
-      #   run: |
-      #       source /opt/ros/jazzy/setup.bash
-      #       export ROS_DISTRO=jazzy
-      #       rosdep update --rosdistro jazzy
-      #       rosdep install --from-paths . --ignore-src -r -y
+      - name: Install ROS dependencies
+        run: |
+            export ROS_DISTRO=jazzy
+            source /opt/ros/jazzy/setup.bash
+            rosdep update --rosdistro jazzy
+            rosdep install --from-paths . --ignore-src -r -y
+      
+      - name: Build ROS2 Workspace
+        run: |
+            colcon build --base-paths .
       
       # - name: Build and Test
       #   uses: ros-tooling/action-ros-ci@v0.3
