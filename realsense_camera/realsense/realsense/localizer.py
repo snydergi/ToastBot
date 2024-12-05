@@ -5,6 +5,8 @@ from cv_bridge import CvBridge
 from apriltag_msgs.msg import AprilTagDetectionArray
 import cv2
 import numpy as np
+from tf2_ros import TransformBroadcaster, TransformStamped
+from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 
 # Hardcode the transformation from Robot's base frame to the april tag
 # Using the Realsense camera, locate the april tag that is mounted to the robot's base
@@ -18,4 +20,12 @@ import numpy as np
 
 
 class Localizer(Node):
-    pass
+    def __init__(self):
+        super().__init__('localizer')
+        self.static_broadcaster = StaticTransformBroadcaster(self)
+
+    def robot_base_to_base_tag_transform(self) -> TransformStamped:
+        # Return the Transform from RobotBase -> BaseTag
+        robot_base_to_base_tag = TransformStamped()
+        robot_base_to_base_tag.header.stamp = self.get_clock().now().to_msg()
+        robot_base_to_base_tag.header.frame_id = "base_link"
