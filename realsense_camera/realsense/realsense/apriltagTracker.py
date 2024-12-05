@@ -25,7 +25,7 @@ class TfFrameListener(Node):
         self.logger = self.get_logger()
 
         # Declare and acquire the 'target_frame' parameter
-        self.target_frame = self.declare_parameter(
+        self.source_frame = self.declare_parameter(
             'camera_frame', 'camera_color_optical_frame').get_parameter_value().string_value
 
         # Initialize TF2 Buffer and Listener
@@ -43,13 +43,13 @@ class TfFrameListener(Node):
 
     def update_transformations(self):
         """Update the transformation matrices for various target frames."""
-        self.camera_to_robot_base = self.get_homogeneous_matrix(target_frame='robot_base')
-        self.camera_to_end_effector = self.get_homogeneous_matrix(target_frame='end_effector')
-        self.camera_to_toaster = self.get_homogeneous_matrix(target_frame='toaster')
-        self.camera_to_knife_holder = self.get_homogeneous_matrix(target_frame='knife_holder')
-        self.camera_to_plate = self.get_homogeneous_matrix(target_frame='plate')
+        self.camera_to_robot_base = self.get_homogeneous_matrix(to_frame='robotbase')
+        self.camera_to_end_effector = self.get_homogeneous_matrix(to_frame='end_effector')
+        self.camera_to_toaster = self.get_homogeneous_matrix(to_frame='toaster')
+        self.camera_to_knife_holder = self.get_homogeneous_matrix(to_frame='knife_holder')
+        self.camera_to_plate = self.get_homogeneous_matrix(to_frame='plate')
 
-    def get_homogeneous_matrix(self, target_frame: str) -> TransformStamped:
+    def get_homogeneous_matrix(self, to_frame: str) -> TransformStamped:
         """
         Retrieve the homogeneous transformation matrix from the camera to the specified frame.
 
@@ -59,15 +59,16 @@ class TfFrameListener(Node):
         Returns:
             TransformStamped: The transformation matrix as a TransformStamped message
         """
+        from_frame = self.source_frame
         try:
             # Lookup transformation from target frame to camera frame
             transformation = self.tf_buffer.lookup_transform(
-                target_frame,
-                self.target_frame,
+                to_frame,
+                from_frame,
                 rclpy.time.Time())
             return transformation
         except TransformException as ex:
-            self.logger.info(f'Could not transform {self.target_frame} to {target_frame}: {ex}')
+            self.logger.info(f'Could not transform {self.source_frame} to {to_frame}: {ex}')
             return None
 
 
