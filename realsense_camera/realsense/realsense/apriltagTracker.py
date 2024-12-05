@@ -12,6 +12,18 @@ from geometry_msgs.msg import TransformStamped
 from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
+from tf2_ros import TransformBroadcaster, TransformStamped
+from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
+
+# Hardcode the transformation from Robot's base frame to the april tag
+# Using the Realsense camera, locate the april tag that is mounted to the robot's base
+# Now that we Know RobotBase -> BaseTag and Camera -> BaseTag,
+# We need to manually publish the tf transform from RobotBase -> BaseTag
+# And then we need to then publish the tf transform from Camera -> BaseTag
+# so we can connect the TF tree.
+# This node should not publish to any topics but should publish the TF of the Camera
+# to the BaseTag and all other tags it sees so other nodes can look up
+# RobotBase -> <AnyTag> since
 
 
 class TfFrameListener(Node):
@@ -43,11 +55,22 @@ class TfFrameListener(Node):
 
     def update_transformations(self):
         """Update the transformation matrices for various target frames."""
-        self.camera_to_robot_base = self.get_homogeneous_matrix(target_frame='robot_base')
-        self.camera_to_end_effector = self.get_homogeneous_matrix(target_frame='end_effector')
-        self.camera_to_toaster = self.get_homogeneous_matrix(target_frame='toaster')
-        self.camera_to_knife_holder = self.get_homogeneous_matrix(target_frame='knife_holder')
-        self.camera_to_plate = self.get_homogeneous_matrix(target_frame='plate')
+        self.camera_to_robot_base = self.get_homogeneous_matrix(
+            target_frame='robot_base')
+        self.camera_to_end_effector = self.get_homogeneous_matrix(
+            target_frame='end_effector')
+        self.camera_to_toaster = self.get_homogeneous_matrix(
+            target_frame='toaster')
+        self.camera_to_knife_holder = self.get_homogeneous_matrix(
+            target_frame='knife_holder')
+        self.camera_to_plate = self.get_homogeneous_matrix(
+            target_frame='plate')
+
+    def robot_base_to_base_tag_transform(self) -> TransformStamped:
+        # Return the Transform from RobotBase -> BaseTag
+        robot_base_to_base_tag = TransformStamped()
+        robot_base_to_base_tag.header.stamp = self.get_clock().now().to_msg()
+        robot_base_to_base_tag.header.frame_id = "base_link"
 
     def get_homogeneous_matrix(self, target_frame: str) -> TransformStamped:
         """
@@ -67,7 +90,10 @@ class TfFrameListener(Node):
                 rclpy.time.Time())
             return transformation
         except TransformException as ex:
-            self.logger.info(f'Could not transform {self.target_frame} to {target_frame}: {ex}')
+            self.logger.info(
+                f'Could not transform {self.target_frame} to {
+                    target_frame}: {ex}'
+            )
             return None
 
 
