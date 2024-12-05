@@ -1,4 +1,4 @@
-name: Build ROS2 Jazzy Packages
+name: Build Workspace
 
 # Pushing to main or PR targeting main
 on:
@@ -11,14 +11,14 @@ on:
 
 
 jobs:
-  build:
+  Setup-Linux:
     runs-on: ubuntu-latest
 
     steps:
       - name: Install Linux dependencies
         run: |
-          apt-get -yq update
-          apt-get -yq install ssh
+          sudo apt -yq update
+          sudo apt -yq install ssh
 
       - name: Set up SSH key
         run: |
@@ -36,21 +36,21 @@ jobs:
       
       - name: Update Git Submodules
         run: git submodule update --init --recursive
-
+  
+  Setup-ROS2:
+    runs-on: ubuntu-latest
+    needs: Setup-Linux
+    steps:
       # Set up ROS2 environment
-      - name: Setup ROS2 Jazzy
+      - name: Setup ROS2 Environment
         uses: ros-tooling/setup-ros@0.7.9
-        with:
-          required-ros-distributions: jazzy
 
-      # - name: Install ROS dependencies
-      #   run: |
-      #       source /opt/ros/jazzy/setup.bash
-      #       export ROS_DISTRO=jazzy
-      #       rosdep update --rosdistro jazzy
-      #       rosdep install --from-paths . --ignore-src -r -y
+      - name: Install ROS Jazzy dependencies
+        run: |
+            export ROS_DISTRO=jazzy
+            rosdep update --rosdistro jazzy
+            rosdep install --from-paths . --ignore-src -r -y
       
-      # - name: Build and Test
-      #   uses: ros-tooling/action-ros-ci@v0.3
-      #   with:
-      #     target-ros2-distro: 'jazzy'
+      - name: Colcon Build
+        run: |
+            colcon build --base-paths .
