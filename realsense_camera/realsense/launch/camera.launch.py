@@ -18,7 +18,7 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     """Init function to launch the files."""
     pkg_share = FindPackageShare(package='realsense').find('realsense')
-    tags_yaml = os.path.join(pkg_share, 'cfg', 'config/tags.yaml')
+    tags_yaml = os.path.join(pkg_share, 'config/tags.yaml')
     tags_tf_rviz = os.path.join(pkg_share, 'config/tags_tf.rviz')
 
     return LaunchDescription([
@@ -67,7 +67,12 @@ def generate_launch_description():
                 ('image_rect', '/camera/camera/color/image_raw'),
                 ('camera_info', '/camera/camera/color/camera_info')
             ],
-            parameters=[tags_yaml]
+
+            parameters=[
+                tags_yaml,
+                {'use_approximate_sync': True}  # Enable approximate synchronization
+            ],
+            arguments=['--ros-args', '--log-level', 'error']
         ),
         Node(
             package='realsense',
