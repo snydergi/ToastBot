@@ -1,56 +1,4 @@
-"""
-AprilTags Detection and Visualization Node
-
-This script defines a ROS 2 node for detecting AprilTags in a live camera feed, drawing 
-visual markers on the detected tags, and providing relevant logging information. It uses 
-the `sensor_msgs/Image` topic for camera data and the `apriltag_msgs/AprilTagDetectionArray` 
-topic for AprilTag detection messages.
-
-Classes:
---------
-- `FrameListener`: A custom ROS 2 node that listens for transformations between frames 
-  in a turtlesim simulation. It spawns a new turtle (`turtle2`) and sends velocity 
-  commands for it to follow another frame (`turtle1` by default).
-
-Methods:
---------
-- `__init__()`: Initializes the node, sets up transformation listeners, and declares 
-  parameters. Also initializes a client for spawning turtles and a publisher for turtle 
-  velocity commands.
-- `on_timer()`: Periodically checks and computes the transformation between the target 
-  frame and `turtle2`, commanding `turtle2` to follow the target frame. Handles spawning 
-  of `turtle2` if it has not yet been spawned.
-
-Main Execution:
----------------
-- Initializes the ROS 2 node.
-- Declares a `target_frame` parameter (default is `turtle1`).
-- Uses the tf2 ROS library to compute transformations and control the movement of `turtle2`.
-- Spawns `turtle2` in the simulation environment using the `Spawn` service.
-- Spins the node to keep it running and responsive to updates.
-
-Dependencies:
--------------
-- ROS 2
-- tf2_ros (for transformation calculations)
-- turtlesim (for simulation environment and services)
-- geometry_msgs (for sending velocity commands)
-
-Usage:
-------
-Run this node in a ROS 2 environment where turtlesim is running. This node spawns a 
-second turtle (`turtle2`) and makes it follow the frame of another turtle (`turtle1` 
-by default).
-
-Topics:
--------
-- Subscribed:
-  - `/tf`: Transformation data for frames.
-- Published:
-  - `turtle2/cmd_vel`: Velocity commands for `turtle2`.
-"""
-
-
+"""Direct copy from ros2 documentation of how to listen to tf tree in rviz."""
 
 import math
 
@@ -67,13 +15,15 @@ from turtlesim.srv import Spawn
 
 
 class FrameListener(Node):
+    """Class for tracking turtlesim simulation frame with listener."""
 
     def __init__(self):
+        """Init function for tf frame listener."""
         super().__init__('turtle_tf2_frame_listener')
 
         # Declare and acquire `target_frame` parameter
         self.target_frame = self.declare_parameter(
-          'target_frame', 'turtle1').get_parameter_value().string_value
+            'target_frame', 'turtle1').get_parameter_value().string_value
 
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
@@ -93,8 +43,7 @@ class FrameListener(Node):
         self.timer = self.create_timer(1.0, self.on_timer)
 
     def on_timer(self):
-        # Store frame names in variables that will be used to
-        # compute transformations
+        """Store frame names in variables that will be used to compute transformations."""
         from_frame_rel = self.target_frame
         to_frame_rel = 'turtle2'
 
@@ -149,6 +98,7 @@ class FrameListener(Node):
 
 
 def main():
+    """Init Main function for frame listener."""
     rclpy.init()
     node = FrameListener()
     try:
