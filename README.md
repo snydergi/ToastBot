@@ -24,29 +24,29 @@ git submodule update
 # CAD List
 Each part should have a location for an april tag to be attached to it so we can locate it with the camera. Since we know the geometry of all the fixtures and parts we can hard-code those transformations and dynamically locate their respective tags.
 ## Bread End-Effector
-Thick, long prongs that resemble chopsticks so we can grab the bread from the holder and the toaster with quite some Z offset. The end-effector doesn't need an april tag.
+Thick, long prongs that resemble chopsticks so we can grab the bread from the holder and the toaster with quite some Z offset. The end-effector doesn't need an april tag.\
 Dimensions:
 
 ## Loaf Holder
-A holder with several slots for bread to be placed into. This is for pre-toasted bread and we can start with just 2 slots filled but we should have several slots to pick from.
+A holder with several slots for bread to be placed into. This is for pre-toasted bread and we can start with just 2 slots filled but we should have several slots to pick from. \
 Dimensions:
- -  Slot Width:
- -  Slot Height:
- -  Slot Spacing:
+ -  Slot Length: 137 mm
+ -  Slot Width: 36 mm
+ -  Slot Depth: 100 mm
+ -  Slot Spacing: 24 mm
  -  Number of Slots:
 
 April Tag Size:
 
 ## Knife Handle
-Two pieces that enclose around the actual knife handle to make it a rectangular prism. 
-
+Two pieces that enclose around the actual knife handle to make it a rectangular prism. \
 Printed Handle Dimensions:
  - Length:
  - Width:
  - Height: 
 
 ## Toaster Stand
-An elevated stand (toaster box on its side is the perfect height) for the toaster. It will sit on the table close to the arm and off to the left (when facing the robot's forward direction)
+An elevated stand (toaster box on its side is the perfect height) for the toaster. It will sit on the table close to the arm and off to the left (when facing the robot's forward direction) \
 Dimensions:
   - Length:
   - Width:
@@ -55,7 +55,7 @@ Dimensions:
 April Tag Size: 
 
 ## Lever Platform
-A platform or slab to attach to the toaster lever to make it easier to manipulate with the end-effector. Doesn't need an April tag but might be worth trying to fit a small one on there.
+A platform or slab to attach to the toaster lever to make it easier to manipulate with the end-effector. Doesn't need an April tag but might be worth trying to fit a small one on there. \
 Lever Dimensions:
    - Length: 35 mm
    - Width: 20.4
@@ -64,13 +64,12 @@ Lever Dimensions:
 April Tag Size: 
 
 ## Toaster Dial
-A dial that should press-fit or attach to the toaster dials so it's easier for the end-effector to manipulate it.
-Dial-Lever Spacing: 43 mm
+A dial that should press-fit or attach to the toaster dials so it's easier for the end-effector to manipulate it. \
+Dial-Lever Spacing: 43 mm \
 Toaster Dial Dimensions:
   - Length: 40 mm
   - Width: 10 mm
   - Height: 10 mm
-
 Printed Dial Dimensions:
  - Diameter:
  - Length:
@@ -78,7 +77,7 @@ Printed Dial Dimensions:
 April Tag Size: 
 
 ## Plate Fixture
-A fixture to hold the plate and keep it on the table. This should have an april tag to locate it.
+A fixture to hold the plate and keep it on the table. This should have an april tag to locate it. \
 Toast Dimensions:
   - Length: 133 mm
   - Width: 110 mm
