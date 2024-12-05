@@ -1,0 +1,17 @@
+apriltag:
+  ros__parameters:
+    family: 36h11  # Tag family
+    size: 0.165    # Tag size in meters
+    
+    tag:
+      ids: [0, 1, 2, 3, 4]  # Specific tag IDs to detect
+      frames: [tag0, tag1, tag2, tag3, tag4]  # Optional custom frame names
+      # sizes: [0.165, 0.165, 0.165]  # Optional individual tag sizes
+    
+    detector:
+      threads: 2
+      decimate: 2.0
+      blur: 0.8
+
+    parameters:
+    - approximate_sync: true
