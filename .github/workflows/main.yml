@@ -17,8 +17,8 @@ jobs:
     steps:
       - name: Install Linux dependencies
         run: |
-          apt-get -yq update
-          apt-get -yq install ssh
+          sudo apt-get -yq update
+          sudo apt-get -yq install ssh
 
       - name: Set up SSH key
         run: |
