@@ -67,7 +67,12 @@ def generate_launch_description():
                 ('image_rect', '/camera/camera/color/image_raw'),
                 ('camera_info', '/camera/camera/color/camera_info')
             ],
-            parameters=[tags_yaml]
+
+            parameters=[
+                tags_yaml,
+                {'use_approximate_sync': True}  # Enable approximate synchronization
+            ],
+            arguments=['--ros-args', '--log-level', 'error']
         ),
         Node(
             package='realsense',

@@ -6,12 +6,12 @@ apriltag:
     tag:
       ids: [0, 1, 2, 3, 4]  # Specific tag IDs to detect
       frames: [tag0, tag1, tag2, tag3, tag4]  # Optional custom frame names
-      # sizes: [0.165, 0.165, 0.165]  # Optional individual tag sizes
+      sizes: [0.02, 0.03, 0.03, 0.03, .125]  # Optional individual tag sizes
     
     detector:
-      threads: 2
-      decimate: 2.0
-      blur: 0.8
+      threads: 4
+      decimate: 1.0
+      blur: 0.
 
     parameters:
     - approximate_sync: true
