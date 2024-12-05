@@ -1,3 +1,22 @@
+"""
+Simple Detection Node.
+
+This module defines the `SimpleDetectionNode` class, designed to detect white objects.
+
+Functions:
+Detect Object by Color:
+- Detects an object by a color, in this we are using white
+
+Service and Action Integration:
+- Integrates with MoveIt services and actions:
+    - MoveGroup Action for trajectory execution.
+    - Cartesian path computation service for straight-line trajectories.
+- Handles feedback during action execution for real-time status updates.
+
+Authors:
+    Asa Rogers
+    Date: 2024-12-05
+"""
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image

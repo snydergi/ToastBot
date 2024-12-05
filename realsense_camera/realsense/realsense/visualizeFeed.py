@@ -70,7 +70,7 @@ class ApriltagsNode(Node):
         Publishes processed image data (reserved for future use).
     subscription : rclpy.Subscription
         Subscribes to the live RGB camera feed.
-    detection_subscription : rclpy.Subscription
+    detection_sub : rclpy.Subscription
         Subscribes to the AprilTag detection messages.
     logger : function
         Logger for displaying information in the console.
@@ -88,7 +88,8 @@ class ApriltagsNode(Node):
         self.publisher = self.create_publisher(Image, '/camera/camera/color/image_raw', 10)
         self.subscription = self.create_subscription(Image, '/camera/camera/color/image_raw',
                                                      self.listener_callback, 10)
-        self.detection_subscription = self.create_subscription(AprilTagDetectionArray, 'detections', self.detection_callback, 10)
+        self.detection_sub = self.create_subscription(AprilTagDetectionArray, 'detections',
+                                                      self.detection_callback, 10)
         self.logger = self.get_logger().info
 
         self.target_detection = False
@@ -132,7 +133,7 @@ class ApriltagsNode(Node):
             cv2.circle(current_frame, self.target_centre, 10, (0, 255, 0), -1)
 
         # Display the camera feed
-        cv2.imshow("Camera Feed with AprilTag", current_frame)
+        cv2.imshow('Camera Feed with AprilTag', current_frame)
         cv2.waitKey(1)
 
 
