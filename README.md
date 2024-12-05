@@ -86,31 +86,31 @@ Toast Dimensions:
 April Tag Size: 
 - Toaster
     tag 0
-    - Length: 20 mm - 12.5 mm
-    - Width: 20 mm - 12.5 mm
+    - total size: 20 mm - 12.5 mm
+    - tag size  : 20 mm - 12.5 mm
     
-- Lever Platform
+- Lever
     tag 1
-    - Length: 30 mm
-    - Width: 15 mm
+    - total size:: 30 mm
+    - tag size  : 15 mm
     
 - Knife Handle
     tag 2
-    - Length: 30 mm
-    - Width: 30 mm
+    - total size:: 30 mm
+    - tag size  : 30 mm
 
 - Plate
     tag 3
-    - Length: 30 mm
-    - Width: 30 mm
+    - total size: 30
+    - tag size  : 24
     
-- Plate Fixture
+- Bread Holder
     tag 4
-    - Length: 125 mm
-    - Width: 105 mm
+    - total size:: 85 mm
+    - tag size  : 85 mm
 
 Stretch
 - Lever Dial
     tag 5
-  - Length: 35 mm
-  - Width: 10 mm
+  - total size:: 35 mm
+  - tag size  : 10 mm

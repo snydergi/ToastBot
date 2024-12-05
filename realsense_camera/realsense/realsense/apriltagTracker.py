@@ -37,7 +37,7 @@ class TfFrameListener(Node):
         self.logger = self.get_logger()
 
         # Declare and acquire the 'target_frame' parameter
-        self.target_frame = self.declare_parameter(
+        self.source_frame = self.declare_parameter(
             'camera_frame', 'camera_color_optical_frame').get_parameter_value().string_value
 
         # Initialize TF2 Buffer and Listener
@@ -72,37 +72,33 @@ class TfFrameListener(Node):
         robot_base_to_base_tag.header.stamp = self.get_clock().now().to_msg()
         robot_base_to_base_tag.header.frame_id = "base_link"
 
-    def get_homogeneous_matrix(self, target_frame: str) -> TransformStamped:
+    def get_homogeneous_matrix(self, to_frame: str) -> TransformStamped:
         """
         Retrieve the homogeneous transformation matrix from the camera to the specified frame.
 
         Args:
-            target_frame (str): The name of the target frame to transform to.
+            to_frame (str): The name of the target frame to transform to.
 
         Returns:
             TransformStamped: The transformation matrix as a TransformStamped message
         """
+        from_frame = self.source_frame
         try:
             # Lookup transformation from target frame to camera frame
             transformation = self.tf_buffer.lookup_transform(
-                target_frame,
-                self.target_frame,
+                to_frame,
+                from_frame,
                 rclpy.time.Time())
             return transformation
         except TransformException as ex:
             self.logger.info(
-                f'Could not transform {self.target_frame} to {
-                    target_frame}: {ex}'
+                f'Could not transform {from_frame} to {to_frame}: {ex}'
             )
             return None
 
 
 def main():
-    """
-    Init Main function to initialize the node and start spinning.
-
-    This function sets up the node, spins it to handle callbacks, and gracefully shuts down.
-    """
+    """Set up the node, spins it to handle callbacks, and gracefully shuts down."""
     rclpy.init()
     node = TfFrameListener()
     try:
