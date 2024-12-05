@@ -14,7 +14,7 @@ setup(
         ('share/' + package_name + '/config',
          ['config/pcl.rviz', 'config/tags.yaml', 'config/tags_tf.rviz']),
         ('share/' + package_name + '/launch',
-         ['launch/camera.launch.py', 'launch/rs_launch.py', 'launch/visualFeed.launch.py']),
+         ['launch/camera.launch.py', 'launch/visualFeed.launch.py']),
     ],
     install_requires=['setuptools'],  # Dependencies for Python
     zip_safe=True,
