@@ -1,4 +1,4 @@
-name: Build ROS2 Jazzy Packages
+name: Build Workspace
 
 # Pushing to main or PR targeting main
 on:
@@ -13,6 +13,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:noble
 
     steps:
       - name: Install Linux dependencies
@@ -50,7 +52,7 @@ jobs:
             rosdep update --rosdistro jazzy
             rosdep install --from-paths . --ignore-src -r -y
       
-      - name: Build ROS2 Workspace
+      - name: Colcon Build
         run: |
             colcon build --base-paths .
       
