@@ -71,16 +71,17 @@ class ApriltagsNode(Node):
         self.target_detection = False
         self.target_centre = None
         self.bridge = CvBridge()
-
+    
     def detection_callback(self, msg):
         if len(msg.detections) > 0:
             detection = msg.detections[0]
-            # self.get_logger().info(f'Tag ID: {detection.id}')
+            self.get_logger().info(f'Tag Data: {detection}')
             # self.get_logger().info(f'Centre: x={detection.centre.x}, y={detection.centre.y}')
             # self.get_logger().info(f'Pose: {detection.pose}')
             
             self.target_detection = True
             self.target_centre = (
+                
                 int(detection.centre.x), 
                 int(detection.centre.y)
             )
