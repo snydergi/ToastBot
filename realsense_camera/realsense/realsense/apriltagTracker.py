@@ -54,7 +54,7 @@ class TfFrameListener(Node):
         Retrieve the homogeneous transformation matrix from the camera to the specified frame.
 
         Args:
-            target_frame (str): The name of the target frame to transform to.
+            to_frame (str): The name of the target frame to transform to.
 
         Returns:
             TransformStamped: The transformation matrix as a TransformStamped message
@@ -73,11 +73,7 @@ class TfFrameListener(Node):
 
 
 def main():
-    """
-    Init Main function to initialize the node and start spinning.
-
-    This function sets up the node, spins it to handle callbacks, and gracefully shuts down.
-    """
+    """Set up the node, spins it to handle callbacks, and gracefully shuts down."""
     rclpy.init()
     node = TfFrameListener()
     try:
