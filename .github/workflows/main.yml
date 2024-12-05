@@ -11,7 +11,7 @@ on:
 
 
 jobs:
-  colcon_build_and_test:
+  build:
     runs-on: ubuntu-latest
     container:
       image: ubuntu:noble
@@ -40,7 +40,7 @@ jobs:
         run: git submodule update --init --recursive
 
       # Set up ROS2 environment
-      - name: Set up ROS2
+      - name: Setup ROS2 Jazzy
         uses: ros-tooling/setup-ros@0.7.9
         with:
           required-ros-distributions: jazzy
