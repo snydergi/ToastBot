@@ -29,6 +29,7 @@ Dimensions:
 
 ## Loaf Holder
 A holder with several slots for bread to be placed into. This is for pre-toasted bread and we can start with just 2 slots filled but we should have several slots to pick from.
+
 Dimensions:
  -  Slot Width:
  -  Slot Height:
@@ -47,6 +48,7 @@ Printed Handle Dimensions:
 
 ## Toaster Stand
 An elevated stand (toaster box on its side is the perfect height) for the toaster. It will sit on the table close to the arm and off to the left (when facing the robot's forward direction)
+
 Dimensions:
   - Length:
   - Width:
@@ -56,6 +58,7 @@ April Tag Size:
 
 ## Lever Platform
 A platform or slab to attach to the toaster lever to make it easier to manipulate with the end-effector. Doesn't need an April tag but might be worth trying to fit a small one on there.
+
 Lever Dimensions:
    - Length: 35 mm
    - Width: 20.4
@@ -65,7 +68,9 @@ April Tag Size:
 
 ## Toaster Dial
 A dial that should press-fit or attach to the toaster dials so it's easier for the end-effector to manipulate it.
+
 Dial-Lever Spacing: 43 mm
+
 Toaster Dial Dimensions:
   - Length: 40 mm
   - Width: 10 mm
@@ -79,6 +84,7 @@ April Tag Size:
 
 ## Plate Fixture
 A fixture to hold the plate and keep it on the table. This should have an april tag to locate it.
+
 Toast Dimensions:
   - Length: 133 mm
   - Width: 110 mm
