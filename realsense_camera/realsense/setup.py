@@ -1,3 +1,4 @@
+"""The setup file called during the build."""
 from setuptools import setup
 
 package_name = 'realsense'
@@ -10,8 +11,10 @@ setup(
         ('share/ament_index/resource_index/packages',
          ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name + '/config', ['config/pcl.rviz', 'config/tags.yaml', 'config/tags_tf.rviz']),
-        ('share/' + package_name + '/launch', ['launch/camera.launch.py', 'launch/rs_launch.py', 'launch/visualFeed.launch.py']),
+        ('share/' + package_name + '/config',
+         ['config/pcl.rviz', 'config/tags.yaml', 'config/tags_tf.rviz']),
+        ('share/' + package_name + '/launch',
+         ['launch/camera.launch.py', 'launch/rs_launch.py', 'launch/visualFeed.launch.py']),
     ],
     install_requires=['setuptools'],  # Dependencies for Python
     zip_safe=True,
