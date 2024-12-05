@@ -30,9 +30,10 @@ Dimensions:
 ## Loaf Holder
 A holder with several slots for bread to be placed into. This is for pre-toasted bread and we can start with just 2 slots filled but we should have several slots to pick from. \
 Dimensions:
- -  Slot Width:
- -  Slot Height:
- -  Slot Spacing:
+ -  Slot Length: 36 mm
+ -  Slot Width: 137 mm
+ -  Slot Depth: 100 mm
+ -  Slot Spacing: 24 mm
  -  Number of Slots:
 
 April Tag Size:
