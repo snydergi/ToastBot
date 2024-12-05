@@ -1,96 +1,91 @@
-"""Direct copy from ros2 documentation of how to listen to tf tree in rviz."""
+"""
+Example of a ROS 2 node for listening to the TF tree and extracting transformations.
 
-import math
-
-from geometry_msgs.msg import Twist
+This script demonstrates how to use the TF2 library to listen to transformations
+in a simulation or real-world robotic system, specifically from a camera to various
+objects in the environment.
+"""
 
 import rclpy
 from rclpy.node import Node
-
+from geometry_msgs.msg import TransformStamped
 from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
-from turtlesim.srv import Spawn
 
-
-class FrameListener(Node):
-    """Class for tracking turtlesim simulation frame with listener."""
+class TfFrameListener(Node):
+    """ROS 2 node for listening to TF transformations and extracting homogenous matrices."""
 
     def __init__(self):
-        """Init function for tf frame listener."""
-        super().__init__('turtle_tf2_frame_listener')
+        """Initialize the TF Frame Listener node."""
+        super().__init__('tf_frame_listener')
 
-        self.logger = self.get_logger().info
+        # Logger for informational messages
+        self.logger = self.get_logger()
 
-        # Declare and acquire `target_frame` parameter
+        # Declare and acquire the 'target_frame' parameter
         self.target_frame = self.declare_parameter(
-            'camera_color_optical_frame', 'camera_link').get_parameter_value().string_value
+            'camera_frame', 'camera_color_optical_frame').get_parameter_value().string_value
 
+        # Initialize TF2 Buffer and Listener
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
-        # Call on_timer function every second
-        self.timer = self.create_timer(1.0, self.on_timer)
+        self.cameraToRobotbase = TransformStamped()
+        self.cameraToEnd_Effector = TransformStamped()
+        self.cameraToToaster = TransformStamped()
+        self.cameraToKnife_holder = TransformStamped()
+        self.cameraToPlate = TransformStamped()
 
-    def on_timer(self):
-        """Store frame names in variables that will be used to compute transformations."""
-        from_frame_rel = self.target_frame
-        to_frame_rel = 'tag36h11:3'
+        # Create a timer to periodically fetch transformations
+        self.timer = self.create_timer(1.0, self.update_transformations)
 
+    def update_transformations(self):
+        """Update the transformation matrices for various target frames."""
+        self.camera_to_robot_base = self.get_homogeneous_matrix(target_frame='robot_base')
+        self.camera_to_end_effector = self.get_homogeneous_matrix(target_frame='end_effector')
+        self.camera_to_toaster = self.get_homogeneous_matrix(target_frame='toaster')
+        self.camera_to_knife_holder = self.get_homogeneous_matrix(target_frame='knife_holder')
+        self.camera_to_plate = self.get_homogeneous_matrix(target_frame='plate')
+
+    def get_homogeneous_matrix(self, target_frame: str) -> TransformStamped:
+        """
+        Retrieve the homogeneous transformation matrix from the camera to the specified frame.
+
+        Args:
+            target_frame (str): The name of the target frame to transform to.
+
+        Returns:
+            TransformStamped: The transformation matrix as a TransformStamped message, or None if unavailable.
+        """
         try:
-            t = self.tf_buffer.lookup_transform(
-                to_frame_rel,
-                from_frame_rel,
+            # Lookup transformation from target frame to camera frame
+            transformation = self.tf_buffer.lookup_transform(
+                target_frame,
+                self.target_frame,
                 rclpy.time.Time())
-            self.logger(str(t))
+            return transformation
         except TransformException as ex:
-            self.get_logger().info(
-                f'Could not transform {to_frame_rel} to {from_frame_rel}: {ex}')
-            return
-        #         msg = Twist()
-        #         scale_rotation_rate = 1.0
-        #         msg.angular.z = scale_rotation_rate * math.atan2(
-        #             t.transform.translation.y,
-        #             t.transform.translation.x)
-
-        #         scale_forward_speed = 0.5
-        #         msg.linear.x = scale_forward_speed * math.sqrt(
-        #             t.transform.translation.x ** 2 +
-        #             t.transform.translation.y ** 2)
-
-        #         self.publisher.publish(msg)
-        #     else:
-        #         if self.result.done():
-        #             self.get_logger().info(
-        #                 f'Successfully spawned {self.result.result().name}')
-        #             self.turtle_spawned = True
-        #         else:
-        #             self.get_logger().info('Spawn is not finished')
-        # else:
-        #     if self.spawner.service_is_ready():
-        #         # Initialize request with turtle name and coordinates
-        #         # Note that x, y and theta are defined as floats in turtlesim/srv/Spawn
-        #         request = Spawn.Request()
-        #         request.name = 'turtle2'
-        #         request.x = float(4)
-        #         request.y = float(2)
-        #         request.theta = float(0)
-        #         # Call request
-        #         self.result = self.spawner.call_async(request)
-        #         self.turtle_spawning_service_ready = True
-        #     else:
-        #         # Check if the service is ready
-        #         self.get_logger().info('Service is not ready')
+            self.logger.info(f'Could not transform {self.target_frame} to {target_frame}: {ex}')
+            return None
 
 
 def main():
-    """Init Main function for frame listener."""
+    """
+    Main function to initialize the node and start spinning.
+
+    This function sets up the node, spins it to handle callbacks, and gracefully shuts down.
+    """
     rclpy.init()
-    node = FrameListener()
+    node = TfFrameListener()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass
+    finally:
+        rclpy.shutdown()
 
-    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
