@@ -49,25 +49,23 @@ class CameraLocalizer(Node):
         self.static_broadcaster = StaticTransformBroadcaster(self)
 
         # Broadcast the transformation from RobotBase -> BaseTag
-        self.static_broadcaster.sendTransform(self.get_robot_base_tag_tf())
+        # Return the Transform from RobotBase -> BaseTag
+        robotbase_tag = TransformStamped()
+        robotbase_tag.header.stamp = self.get_clock().now().to_msg()
+        robotbase_tag.header.frame_id = "robotbase"
+        robotbase_tag.child_frame_id = "base"
+        # TODO: Manually measure these
+        robotbase_tag.transform.translation.x = 0.0
+        robotbase_tag.transform.translation.y = 0.1
+        robotbase_tag.transform.translation.z = -0.1
+        euler_rotation = (0.0, 0.0, 0.0)  # TODO: Measure RPY
+        quaternion = self.euler_to_quaternion(*euler_rotation)
+        robotbase_tag.transform.rotation = quaternion
+        self.static_broadcaster.sendTransform(robotbase_tag)
+        self.get_logger().info("Published RobotBase -> BaseTag")
 
         # Create a timer to periodically fetch transformations
         # self.timer = self.create_timer(1.0, self.update_transformations)
-
-    def get_robot_base_tag_tf(self) -> TransformStamped:
-        # Return the Transform from RobotBase -> BaseTag
-        robot_base_to_base_tag = TransformStamped()
-        robot_base_to_base_tag.header.stamp = self.get_clock().now().to_msg()
-        robot_base_to_base_tag.header.frame_id = "base_link"
-        robot_base_to_base_tag.child_frame_id = "robotbase"
-        # TODO: Manually measure these
-        robot_base_to_base_tag.transform.translation.x = 2.0
-        robot_base_to_base_tag.transform.translation.y = 0.0
-        robot_base_to_base_tag.transform.translation.z = 0.0
-        euler_rotation = (0.0, 0.0, 0.0)  # TODO: Measure RPY
-        quaternion = self.euler_to_quaternion(*euler_rotation)
-        robot_base_to_base_tag.transform.rotation = quaternion
-        return robot_base_to_base_tag
 
     def update_transformations(self):
         """Update the transformation matrices for various target frames."""

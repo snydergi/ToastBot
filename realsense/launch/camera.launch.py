@@ -47,7 +47,7 @@ def generate_launch_description():
                 PathJoinSubstitution(
                     [FindPackageShare('realsense'), 'tags.yaml']),
             ],
-            # arguments=['--ros-args', '--log-level', 'error']
+            arguments=['--ros-args', '--log-level', 'error']
         ),
         Node(
             package='realsense',

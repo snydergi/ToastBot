@@ -48,7 +48,7 @@ def generate_launch_description():
                 executable='rviz2',
                 arguments=[
                     '-d', PathJoinSubstitution(
-                        [FindPackageShare('toast'), 'config/toast.rviz']
+                        [FindPackageShare('toast'), 'toast_view.rviz']
                     )
                 ],
                 condition=IfCondition(
