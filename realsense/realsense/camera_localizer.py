@@ -49,12 +49,11 @@ class CameraLocalizer(Node):
         self.static_broadcaster = StaticTransformBroadcaster(self)
 
         # Broadcast the transformation from RobotBase -> BaseTag
-        # Return the Transform from RobotBase -> BaseTag
         robotbase_tag = TransformStamped()
         robotbase_tag.header.stamp = self.get_clock().now().to_msg()
         robotbase_tag.header.frame_id = "robotbase"
         robotbase_tag.child_frame_id = "base"
-        # TODO: Manually measure these
+        # TODO: The translation values need to be updated to be more accurate
         robotbase_tag.transform.translation.x = 0.1
         robotbase_tag.transform.translation.y = -0.1
         robotbase_tag.transform.translation.z = 0.0
