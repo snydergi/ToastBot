@@ -49,7 +49,7 @@ def generate_launch_description():
             ],
             parameters=[
                 PathJoinSubstitution(
-                    [FindPackageShare('realsense'), 'config', 'tags.yaml']),
+                    [FindPackageShare('realsense'), 'tags.yaml']),
             ],
             # arguments=['--ros-args', '--log-level', 'error']
         ),

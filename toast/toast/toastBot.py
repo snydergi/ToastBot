@@ -13,7 +13,7 @@ class ToastBot(Node):
 
     def __init__(self):
         """TODO."""
-        super().__init__('toastBot')
+        super().__init__('toast_bot')
         self.get_logger().info('ToastBot Started!')
         client_cb_group = MutuallyExclusiveCallbackGroup()
         self.mpi = MotionPlanningInterface(self)
@@ -53,7 +53,8 @@ class ToastBot(Node):
         pedastleShape = 'Box'
 
         await self.mpi.loadPlanningScene([tableSectionOne, tableSectionTwo, pedastle],
-                                         [tableSectionOneDims, tableSectionTwoDims, pedastleDims],
+                                         [tableSectionOneDims,
+                                             tableSectionTwoDims, pedastleDims],
                                          [section1Shape, section2Shape, pedastleShape])
 
         return response
