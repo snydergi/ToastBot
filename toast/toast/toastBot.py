@@ -97,12 +97,10 @@ class ToastBot(Node):
                     self.get_logger().info(f'Transform connectivity exception: {e}')
             except tf2_ros.ExtrapolationException as e:
                     self.get_logger().info(f'Transform extrapolation exception: {e}')
-            
             ########## Set theses value to match real world
             sliceOffsetX = 0.0
             sliceOffsetZ = 0.0
             ##########
-            
             goal = [
                 baseLoafTrans.transform.translation.x + sliceOffsetX * self.breadNumber,
                 baseLoafTrans.transform.translation.y,
@@ -138,8 +136,37 @@ class ToastBot(Node):
             self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
             await self.mpi.planPath(pathType, goal, execute=True)
             
+            # Move the bread to be directly over the toaster slot
+            try:
+                baseToasterTrans = self.buffer.lookup_transform(
+                        'base_link', 'toaster', rclpy.time.Time())  ########### Is this the correct transform?
+            except tf2_ros.LookupException as e:
+                    self.get_logger().info(f'Tranform lookup exception: {e}')
+            except tf2_ros.ConnectivityException as e:
+                    self.get_logger().info(f'Transform connectivity exception: {e}')
+            except tf2_ros.ExtrapolationException as e:
+                    self.get_logger().info(f'Transform extrapolation exception: {e}')
+            ########## Set theses value to match real world
+            slotOffsetX = 0.0
+            toasterOffsetX = 0.0
+            toasterOffsetY = 0.0
+            toasterOffsetZ = 0.0
+            ##########
+            goal = [
+                baseToasterTrans.transform.translation.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
+                baseToasterTrans.transform.translation.y + toasterOffsetY,
+                baseToasterTrans.transform.translation.z + toasterOffsetZ,
+                baseToasterTrans.transform.rotation.x,
+                baseToasterTrans.transform.rotation.y,
+                baseToasterTrans.transform.rotation.z,
+                baseToasterTrans.transform.rotation.w
+                ]
+            pathType = 'POSE'
+            self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+            await self.mpi.planPath(pathType, goal, execute=True)
             
-            self.breadNumber += 1 # So franka knows which slice to grab
+            # Increment bread number so franka knows which slice to grab
+            self.breadNumber += 1 
         return response
 
 
