@@ -89,7 +89,7 @@ class ToastBot(Node):
             
             # Move the gripper to be above a slice of toast
             try:
-                base_loaf_trans = self.buffer.lookup_transform(
+                baseLoafTrans = self.buffer.lookup_transform(
                         'base_link', 'loaf_holder', rclpy.time.Time())  ########### Is this the correct transform?
             except tf2_ros.LookupException as e:
                     self.get_logger().info(f'Tranform lookup exception: {e}')
@@ -98,22 +98,46 @@ class ToastBot(Node):
             except tf2_ros.ExtrapolationException as e:
                     self.get_logger().info(f'Transform extrapolation exception: {e}')
             
-            #### Set theses value to match real world
-            slice_offset_x = 0
-            slice_offset_z = 0
-            #### 
-            current_pose = await self.mpi.getCurrentPose()
+            ########## Set theses value to match real world
+            sliceOffsetX = 0.0
+            sliceOffsetZ = 0.0
+            ##########
+            
             goal = [
-                base_loaf_trans.transform.translation.x + slice_offset_x * self.breadNumber,
-                base_loaf_trans.transform.translation.y,
-                base_loaf_trans.transform.translation.z + slice_offset_z,
-                base_loaf_trans.transform.rotation.x,
-                base_loaf_trans.transform.rotation.y,
-                base_loaf_trans.transform.rotation.z,
-                base_loaf_trans.transform.rotation.w
+                baseLoafTrans.transform.translation.x + sliceOffsetX * self.breadNumber,
+                baseLoafTrans.transform.translation.y,
+                baseLoafTrans.transform.translation.z + sliceOffsetZ,
+                baseLoafTrans.transform.rotation.x,
+                baseLoafTrans.transform.rotation.y,
+                baseLoafTrans.transform.rotation.z,
+                baseLoafTrans.transform.rotation.w
                 ]
             pathType = 'POSE'
+            self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
             await self.mpi.planPath(pathType, goal, execute=True)
+            
+            # Close the gripper
+            self.get_logger().debug('Closing Gripper')
+            await self.mpi.operateGripper(openGripper=False)
+            
+            # Move the bread out of the loaf holder
+            currentPose = await self.mpi.getCurrentPose()
+            ########## Set theses value to match real world
+            loafHolderOffsetZ = 0.0
+            ##########
+            goal = [
+                currentPose.pose.position.x,
+                currentPose.pose.position.y,
+                currentPose.pose.position.z + loafHolderOffsetZ,
+                currentPose.pose.orientation.x,
+                currentPose.pose.orientation.y,
+                currentPose.pose.orientation.z,
+                currentPose.pose.orientation.w
+                ]
+            pathType = 'POSE'
+            self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+            await self.mpi.planPath(pathType, goal, execute=True)
+            
             
             self.breadNumber += 1 # So franka knows which slice to grab
         return response
