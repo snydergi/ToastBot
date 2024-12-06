@@ -19,6 +19,9 @@ class ToastBot(Node):
         self.mpi = MotionPlanningInterface(self)
         self.setScene = self.create_service(Empty, 'buildScene', self.setScene_callback,
                                             callback_group=client_cb_group)
+        self.breadToToaster = self.create_service(Empty, 'breadToToaster', self.breadToToaster_callback,
+                                                  callback_group=client_cb_group)
+        self.breadNumber = 0 # So the franka picks the correct piece of bread
 
     async def setScene_callback(self, request, response):
         """
@@ -69,7 +72,12 @@ class ToastBot(Node):
         :param response: The response object to be returned after completing the operation.
         :type response: std_msgs/Empty
         """
-        pass
+        self.get_logger().info("BreadToToaster Callback called!")
+        
+        # Move the gripper to be above a slice of toast
+        
+        self.breadNumber += 1 # So franka knows which slice to grab
+        return response
 
 
 def main(args=None):
