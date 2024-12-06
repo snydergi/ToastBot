@@ -12,7 +12,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, [
             'package.xml',
-            'launch/makeToast.launch.py',
+            'launch/make_toast.launch.py',
             'config/toast_view.rviz',
         ]),
     ],
