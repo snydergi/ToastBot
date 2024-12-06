@@ -39,7 +39,24 @@ def generate_launch_description():
                 ),
                 package='rviz2',
                 executable='rviz2',
+                arguments=[
+                    '-d', PathJoinSubstitution(
+                        [FindPackageShare('toast'), 'config/toast.rviz']
+                    )
+                ],
             ),
             Node(package='toast', executable='toast_bot'),
+            IncludeLaunchDescription(
+                PathJoinSubstitution(
+                    [
+                        FindPackageShare('realsense'),
+                        'launch',
+                        'camera.launch.py',
+                    ]
+                ),
+                condition=IfCondition(
+                    EqualsSubstitution(LaunchConfiguration('demo'), 'False')
+                ),
+            ),
         ]
     )

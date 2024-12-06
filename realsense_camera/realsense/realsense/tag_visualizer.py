@@ -60,7 +60,7 @@ import cv2
 import numpy as np
 
 
-class ApriltagsNode(Node):
+class TagVisualizer(Node):
     """
     The AprilTags node.
 
@@ -84,8 +84,9 @@ class ApriltagsNode(Node):
 
     def __init__(self):
         """Init apriltag node."""
-        super().__init__('apriltags_subscriber')
-        self.publisher = self.create_publisher(Image, '/camera/camera/color/image_raw', 10)
+        super().__init__('tag_visualizer')
+        self.publisher = self.create_publisher(
+            Image, '/camera/camera/color/image_raw', 10)
         self.subscription = self.create_subscription(Image, '/camera/camera/color/image_raw',
                                                      self.listener_callback, 10)
         self.detection_sub = self.create_subscription(AprilTagDetectionArray, 'detections',
@@ -126,7 +127,8 @@ class ApriltagsNode(Node):
         data : sensor_msgs.msg.Image
             The RGB image message from the camera.
         """
-        current_frame = self.bridge.imgmsg_to_cv2(data, desired_encoding='bgr8')
+        current_frame = self.bridge.imgmsg_to_cv2(
+            data, desired_encoding='bgr8')
 
         # Draw circle if target is detected
         if self.target_detection and self.target_centre is not None:
@@ -140,7 +142,7 @@ class ApriltagsNode(Node):
 def main(args=None):
     """Start Main entry point for the node. Initializes and spins the ROS 2 node."""
     rclpy.init(args=args)
-    node = ApriltagsNode()
+    node = TagVisualizer()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
