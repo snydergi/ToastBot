@@ -35,10 +35,6 @@ def generate_launch_description():
             }.items()
         ),
         Node(
-            package='rviz2',
-            executable='rviz2'
-        ),
-        Node(
             package='apriltag_ros',
             executable='apriltag_node',
             name='apriltag_node',
@@ -53,4 +49,8 @@ def generate_launch_description():
             ],
             # arguments=['--ros-args', '--log-level', 'error']
         ),
+        Node(
+            package='realsense',
+            executable='camera_localizer'
+        )
     ])

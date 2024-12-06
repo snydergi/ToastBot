@@ -18,7 +18,7 @@ def generate_launch_description():
         [
             DeclareLaunchArgument(
                 'demo',
-                default_value='True',
+                default_value='False',
                 description='Demo Only? (True will launch Franka demo.launch.py)',
             ),
             IncludeLaunchDescription(
@@ -40,7 +40,7 @@ def generate_launch_description():
                     ]
                 ),
                 condition=IfCondition(
-                    EqualsSubstitution(LaunchConfiguration('demo'), 'True')
+                    EqualsSubstitution(LaunchConfiguration('demo'), 'False')
                 ),
             ),
             Node(

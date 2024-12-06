@@ -63,8 +63,8 @@ class ToastBot(Node):
 def main(args=None):
     """Run node."""
     rclpy.init(args=args)
-    toastBot = ToastBot()
-    rclpy.spin(toastBot)
+    toast_bot = ToastBot()
+    rclpy.spin(toast_bot)
     rclpy.shutdown()
 
 

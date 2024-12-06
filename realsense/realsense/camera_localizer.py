@@ -54,19 +54,6 @@ class CameraLocalizer(Node):
         # Create a timer to periodically fetch transformations
         # self.timer = self.create_timer(1.0, self.update_transformations)
 
-    def update_transformations(self):
-        """Update the transformation matrices for various target frames."""
-        self.camera_to_robot_base = self.get_homogeneous_matrix(
-            target_frame='robot_base')
-        self.camera_to_end_effector = self.get_homogeneous_matrix(
-            target_frame='end_effector')
-        self.camera_to_toaster = self.get_homogeneous_matrix(
-            target_frame='toaster')
-        self.camera_to_knife_holder = self.get_homogeneous_matrix(
-            target_frame='knife_holder')
-        self.camera_to_plate = self.get_homogeneous_matrix(
-            target_frame='plate')
-
     def get_robot_base_tag_tf(self) -> TransformStamped:
         # Return the Transform from RobotBase -> BaseTag
         robot_base_to_base_tag = TransformStamped()
@@ -81,6 +68,19 @@ class CameraLocalizer(Node):
         quaternion = self.euler_to_quaternion(*euler_rotation)
         robot_base_to_base_tag.transform.rotation = quaternion
         return robot_base_to_base_tag
+
+    def update_transformations(self):
+        """Update the transformation matrices for various target frames."""
+        self.camera_to_robot_base = self.get_homogeneous_matrix(
+            target_frame='robot_base')
+        self.camera_to_end_effector = self.get_homogeneous_matrix(
+            target_frame='end_effector')
+        self.camera_to_toaster = self.get_homogeneous_matrix(
+            target_frame='toaster')
+        self.camera_to_knife_holder = self.get_homogeneous_matrix(
+            target_frame='knife_holder')
+        self.camera_to_plate = self.get_homogeneous_matrix(
+            target_frame='plate')
 
     def euler_to_quaternion(self, roll: float, pitch: float, yaw: float) -> Quaternion:
         """
