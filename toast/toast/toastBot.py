@@ -57,6 +57,19 @@ class ToastBot(Node):
                                          [section1Shape, section2Shape, pedastleShape])
 
         return response
+    
+    async def breadToToaster_callback(self, request, response):
+        """Move a piece of bread from the loaf holder to the toaster.
+        
+        This function moves the gripper to a piece of bread, grips the piece of bread, 
+        moves the piece of bread to the toaster, then releasses the bread.
+
+        :param request: The request object, typically an empty placeholder for this operation.
+        :type request: std_msgs/Empty
+        :param response: The response object to be returned after completing the operation.
+        :type response: std_msgs/Empty
+        """
+        pass
 
 
 def main(args=None):
