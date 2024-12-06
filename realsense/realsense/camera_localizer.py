@@ -14,7 +14,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from tf2_ros import TransformBroadcaster, TransformStamped
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
-from math import cos, sin
+import math
 
 # Hardcode the transformation from Robot's base frame to the april tag
 # Using the Realsense camera, locate the april tag that is mounted to the robot's base
@@ -55,10 +55,10 @@ class CameraLocalizer(Node):
         robotbase_tag.header.frame_id = "robotbase"
         robotbase_tag.child_frame_id = "base"
         # TODO: Manually measure these
-        robotbase_tag.transform.translation.x = 0.0
-        robotbase_tag.transform.translation.y = 0.1
-        robotbase_tag.transform.translation.z = -0.1
-        euler_rotation = (0.0, 0.0, 0.0)  # TODO: Measure RPY
+        robotbase_tag.transform.translation.x = 0.1
+        robotbase_tag.transform.translation.y = -0.1
+        robotbase_tag.transform.translation.z = 0.0
+        euler_rotation = (-math.pi/2, -math.pi/2, 0.0)  # RPY
         quaternion = self.euler_to_quaternion(*euler_rotation)
         robotbase_tag.transform.rotation = quaternion
         self.static_broadcaster.sendTransform(robotbase_tag)
@@ -94,12 +94,12 @@ class CameraLocalizer(Node):
         :rtype: Quaternion
         """
         q = Quaternion()
-        cy = cos(yaw * 0.5)
-        sy = sin(yaw * 0.5)
-        cr = cos(roll * 0.5)
-        sr = sin(roll * 0.5)
-        cp = cos(pitch * 0.5)
-        sp = sin(pitch * 0.5)
+        cy = math.cos(yaw * 0.5)
+        sy = math.sin(yaw * 0.5)
+        cr = math.cos(roll * 0.5)
+        sr = math.sin(roll * 0.5)
+        cp = math.cos(pitch * 0.5)
+        sp = math.sin(pitch * 0.5)
         q.w = cy * cr * cp + sy * sr * sp
         q.x = cy * sr * cp - sy * cr * sp
         q.y = cy * cr * sp + sy * sr * cp
