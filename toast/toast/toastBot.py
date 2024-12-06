@@ -93,13 +93,18 @@ class ToastBot(Node):
                 self.get_logger().info(f'Transform extrapolation exception: {e}')
         
         #### Set theses value to match real world
-        
+        slice_offset_x = 0
+        slice_offset_z = 0
         #### 
         current_pose = await self.mpi.getCurrentPose()
         goal = [
-            base_loaf_trans.transform.translation.x + slice_offset * self.breadNumber,
+            base_loaf_trans.transform.translation.x + slice_offset_x * self.breadNumber,
             base_loaf_trans.transform.translation.y,
-            base_loaf_trans.transform.translation.z + 
+            base_loaf_trans.transform.translation.z + slice_offset_z,
+            base_loaf_trans.transform.rotation.x,
+            base_loaf_trans.transform.rotation.y,
+            base_loaf_trans.transform.rotation.z,
+            base_loaf_trans.transform.rotation.w
             ]
         
         self.breadNumber += 1 # So franka knows which slice to grab
