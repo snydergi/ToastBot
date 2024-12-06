@@ -80,34 +80,42 @@ class ToastBot(Node):
         :type response: std_msgs/Empty
         """
         self.get_logger().info("BreadToToaster Callback called!")
-        
-        # Move the gripper to be above a slice of toast
-        try:
-            base_loaf_trans = self.buffer.lookup_transform(
-                    'base_link', 'loaf_holder', rclpy.time.Time())  ########### Is this the correct transform?
-        except tf2_ros.LookupException as e:
-                self.get_logger().info(f'Tranform lookup exception: {e}')
-        except tf2_ros.ConnectivityException as e:
-                self.get_logger().info(f'Transform connectivity exception: {e}')
-        except tf2_ros.ExtrapolationException as e:
-                self.get_logger().info(f'Transform extrapolation exception: {e}')
-        
-        #### Set theses value to match real world
-        slice_offset_x = 0
-        slice_offset_z = 0
-        #### 
-        current_pose = await self.mpi.getCurrentPose()
-        goal = [
-            base_loaf_trans.transform.translation.x + slice_offset_x * self.breadNumber,
-            base_loaf_trans.transform.translation.y,
-            base_loaf_trans.transform.translation.z + slice_offset_z,
-            base_loaf_trans.transform.rotation.x,
-            base_loaf_trans.transform.rotation.y,
-            base_loaf_trans.transform.rotation.z,
-            base_loaf_trans.transform.rotation.w
-            ]
-        
-        self.breadNumber += 1 # So franka knows which slice to grab
+        if self.breadNumber > 4:
+            self.get_logger().warn("All out of bread!")
+        else:
+            # Open the gripper
+            self.get_logger().debug('Opening Gripper')
+            await self.mpi.operateGripper(openGripper=True)
+            
+            # Move the gripper to be above a slice of toast
+            try:
+                base_loaf_trans = self.buffer.lookup_transform(
+                        'base_link', 'loaf_holder', rclpy.time.Time())  ########### Is this the correct transform?
+            except tf2_ros.LookupException as e:
+                    self.get_logger().info(f'Tranform lookup exception: {e}')
+            except tf2_ros.ConnectivityException as e:
+                    self.get_logger().info(f'Transform connectivity exception: {e}')
+            except tf2_ros.ExtrapolationException as e:
+                    self.get_logger().info(f'Transform extrapolation exception: {e}')
+            
+            #### Set theses value to match real world
+            slice_offset_x = 0
+            slice_offset_z = 0
+            #### 
+            current_pose = await self.mpi.getCurrentPose()
+            goal = [
+                base_loaf_trans.transform.translation.x + slice_offset_x * self.breadNumber,
+                base_loaf_trans.transform.translation.y,
+                base_loaf_trans.transform.translation.z + slice_offset_z,
+                base_loaf_trans.transform.rotation.x,
+                base_loaf_trans.transform.rotation.y,
+                base_loaf_trans.transform.rotation.z,
+                base_loaf_trans.transform.rotation.w
+                ]
+            pathType = 'POSE'
+            await self.mpi.planPath(pathType, goal, execute=True)
+            
+            self.breadNumber += 1 # So franka knows which slice to grab
         return response
 
 
