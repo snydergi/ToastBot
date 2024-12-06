@@ -1,11 +1,14 @@
 """TODO."""
 
+from geometry_msgs.msg import Pose
+from moveitapi.mpi import MotionPlanningInterface
 import rclpy
 from rclpy.node import Node
-from moveitapi.mpi import MotionPlanningInterface
-from std_srvs.srv import Empty
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
-from geometry_msgs.msg import Pose
+from std_srvs.srv import Empty
+import tf2_ros
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
 
 
 class ToastBot(Node):
@@ -21,7 +24,11 @@ class ToastBot(Node):
                                             callback_group=client_cb_group)
         self.breadToToaster = self.create_service(Empty, 'breadToToaster', self.breadToToaster_callback,
                                                   callback_group=client_cb_group)
-        self.breadNumber = 0 # So the franka picks the correct piece of bread
+        self.breadNumber = 1 # So the franka picks the correct piece of bread
+        # Transform Listener
+        self.tfBuffer = Buffer()
+        self.tfListeneristener = TransformListener(self.tfBuffer, self)
+        
 
     async def setScene_callback(self, request, response):
         """
@@ -75,6 +82,25 @@ class ToastBot(Node):
         self.get_logger().info("BreadToToaster Callback called!")
         
         # Move the gripper to be above a slice of toast
+        try:
+            base_loaf_trans = self.buffer.lookup_transform(
+                    'base_link', 'loaf_holder', rclpy.time.Time())  ########### Is this the correct transform?
+        except tf2_ros.LookupException as e:
+                self.get_logger().info(f'Tranform lookup exception: {e}')
+        except tf2_ros.ConnectivityException as e:
+                self.get_logger().info(f'Transform connectivity exception: {e}')
+        except tf2_ros.ExtrapolationException as e:
+                self.get_logger().info(f'Transform extrapolation exception: {e}')
+        
+        #### Set theses value to match real world
+        
+        #### 
+        current_pose = await self.mpi.getCurrentPose()
+        goal = [
+            base_loaf_trans.transform.translation.x + slice_offset * self.breadNumber,
+            base_loaf_trans.transform.translation.y,
+            base_loaf_trans.transform.translation.z + 
+            ]
         
         self.breadNumber += 1 # So franka knows which slice to grab
         return response
