@@ -165,6 +165,11 @@ class ToastBot(Node):
             self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
             await self.mpi.planPath(pathType, goal, execute=True)
             
+            # Drop the bread into the toaster slot
+            # Close the gripper
+            self.get_logger().debug('Opening Gripper')
+            await self.mpi.operateGripper(openGripper=True)
+            
             # Increment bread number so franka knows which slice to grab
             self.breadNumber += 1 
         return response
