@@ -26,10 +26,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'table = realsense.tablefinder:table_entry',
-            'simpleDetection = realsense.simpleDetection:main',
-            'visualizeFeed = realsense.visualizeFeed:main',
-            'apriltagTracker = realsense.apriltagTracker:main'
+            'camera_localizer = realsense.camera_localizer:main',
+            'tag_visualizer = realsense.tag_visualizer:main',
         ],
     },
 )

@@ -142,9 +142,8 @@ class TagVisualizer(Node):
 def main(args=None):
     """Start Main entry point for the node. Initializes and spins the ROS 2 node."""
     rclpy.init(args=args)
-    node = TagVisualizer()
-    rclpy.spin(node)
-    node.destroy_node()
+    tag_visualizer = TagVisualizer()
+    rclpy.spin(tag_visualizer)
     rclpy.shutdown()
 
 

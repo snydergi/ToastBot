@@ -133,16 +133,12 @@ class CameraLocalizer(Node):
             return None
 
 
-def main():
+def main(args=None):
     """Set up the node, spins it to handle callbacks, and gracefully shuts down."""
-    rclpy.init()
-    node = CameraLocalizer()
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        rclpy.shutdown()
+    rclpy.init(args=args)
+    camera_localizer = CameraLocalizer()
+    rclpy.spin(camera_localizer)
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':
