@@ -68,6 +68,10 @@ class ToastBot(Node):
         pedastle.position.z = 0.0
         pedastleDims = [0.3048, 0.2159, 0.2159]
         pedastleShape = 'Box'
+        
+        breadSliceDimensions = [0.133, 0.110, 20]
+        
+        slice1 = Pose()
 
         await self.mpi.loadPlanningScene([tableSectionOne, tableSectionTwo, pedastle],
                                          [tableSectionOneDims, tableSectionTwoDims, pedastleDims],
