@@ -285,7 +285,7 @@ class ToastBot(Node):
         await self.mpi.planPath(pathType, goal, execute=True)
         
         # Move to ready position
-        self._go_home(self):
+        self._go_home(self)
         
         return response
     
