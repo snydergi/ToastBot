@@ -1,4 +1,5 @@
 """TODO."""
+from math import radians
 
 from geometry_msgs.msg import Pose
 from moveitapi.mpi import MotionPlanningInterface
@@ -30,6 +31,10 @@ class ToastBot(Node):
         # Transform Listener
         self.tfBuffer = Buffer()
         self.tfListeneristener = TransformListener(self.tfBuffer, self)
+        # Links 1-7 Joint positions for home position [deg]
+        self.home_joints = [0, -45, 0, -135, 0, 90, 45]
+        # convert to radians
+        self.home_joints = [radians(i) for i in self.home_joints]
         
 
     async def setScene_callback(self, request, response):
@@ -237,18 +242,62 @@ class ToastBot(Node):
         
         # Attach the lever collision object to the end effector, remove from scene
         self.get_logger().debug('Attach lever to robot.')
-        await self.mpi.attachObject('Slice_1')
-        await self.mpi.removeObjFromScene('Slice_1')
+        await self.mpi.attachObject('toasterLever')
+        await self.mpi.removeObjFromScene('toasterLever')
         
         # Push the lever down
+        currentPose = await self.mpi.getCurrentPose()
+        ########## Set theses value to match real world
+        loafHolderOffsetZ = 0.0
+        ##########
+        goal = [
+            currentPose.pose.position.x,
+            currentPose.pose.position.y,
+            currentPose.pose.position.z + loafHolderOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+            ]
+        pathType = 'CARTESIAN'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
         
         # Remove the lever collision object from the end effector
+        await self.mpi.detachObject('toasterLever')
         
         # Move the gripper up
+        currentPose = await self.mpi.getCurrentPose()
+        ########## Set theses value to match real world
+        loafHolderOffsetZ = 0.0
+        ##########
+        goal = [
+            currentPose.pose.position.x,
+            currentPose.pose.position.y,
+            currentPose.pose.position.z + loafHolderOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+            ]
+        pathType = 'CARTESIAN'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
         
-        # Move away from the toaster
+        # Move to ready position
+        self._go_home(self):
         
         return response
+    
+    
+    async def _go_home(self):
+        """TODO."""
+        # Move the arm directly above the object
+        goal = self.home_joints
+        pathType = 'JOINT'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
+
 
 
 def main(args=None):
