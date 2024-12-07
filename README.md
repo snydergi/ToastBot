@@ -108,7 +108,7 @@ April Tag Size:
     
 - Bread Holder
     tag 4
-    - total size:: 85 mm
+    - total size: 85 mm
     - tag size  : 85 mm
 
 Stretch
@@ -119,7 +119,8 @@ Stretch
 
 ## Toaster Dimensions
 Length: 241.3 mm
-Width: 152.4
+Width: 152.4 mm
+Height: 180.975 mm
 
 # Camera (Realsense)
 ## Dependencies
