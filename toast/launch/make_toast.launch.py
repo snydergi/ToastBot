@@ -18,7 +18,7 @@ def generate_launch_description():
         [
             DeclareLaunchArgument(
                 'demo',
-                default_value='True',
+                default_value='False',
                 description='Demo Only? (True will launch Franka demo.launch.py)',
             ),
             IncludeLaunchDescription(
@@ -33,12 +33,27 @@ def generate_launch_description():
                     EqualsSubstitution(LaunchConfiguration('demo'), 'True')
                 ),
             ),
-            Node(
+            IncludeLaunchDescription(
+                PathJoinSubstitution(
+                    [
+                        FindPackageShare('realsense'), 'camera.launch.py',
+                    ]
+                ),
                 condition=IfCondition(
                     EqualsSubstitution(LaunchConfiguration('demo'), 'False')
                 ),
+            ),
+            Node(
                 package='rviz2',
                 executable='rviz2',
+                arguments=[
+                    '-d', PathJoinSubstitution(
+                        [FindPackageShare('toast'), 'toast_view.rviz']
+                    )
+                ],
+                condition=IfCondition(
+                    EqualsSubstitution(LaunchConfiguration('demo'), 'False')
+                ),
             ),
             Node(package='toast', executable='toast_bot'),
         ]

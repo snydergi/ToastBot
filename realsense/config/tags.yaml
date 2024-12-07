@@ -1,14 +1,12 @@
 apriltag_node:
   ros__parameters:
     family: 36h11
-    size: 0.165
+    size: 0.1
     tag:
       ids: [0, 1, 2, 3, 4]
       frames: [robotbase, end_effector, toaster, knife_holder, plate]
-      sizes: [0.02, 0.03, 0.03, 0.03, 0.125]
+      sizes: [0.1, 0.03, 0.03, 0.03, 0.125]
     detector:
       threads: 4
       decimate: 1.0
       blur: 0.0
-    parameters:
-      approximate_sync: true

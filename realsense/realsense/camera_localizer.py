@@ -8,12 +8,13 @@ objects in the environment.
 
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import TransformStamped, Quaternion
 from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from tf2_ros import TransformBroadcaster, TransformStamped
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
+import math
 
 # Hardcode the transformation from Robot's base frame to the april tag
 # Using the Realsense camera, locate the april tag that is mounted to the robot's base
@@ -26,12 +27,12 @@ from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 # RobotBase -> <AnyTag> since
 
 
-class TfFrameListener(Node):
+class CameraLocalizer(Node):
     """ROS 2 node for listening to TF transformations and extracting homogenous matrices."""
 
     def __init__(self):
         """Initialize the TF Frame Listener node."""
-        super().__init__('tf_frame_listener')
+        super().__init__('camera_localizer')
 
         # Logger for informational messages
         self.logger = self.get_logger()
@@ -44,14 +45,26 @@ class TfFrameListener(Node):
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
-        self.cameraToRobotbase = TransformStamped()
-        self.cameraToEnd_Effector = TransformStamped()
-        self.cameraToToaster = TransformStamped()
-        self.cameraToKnife_holder = TransformStamped()
-        self.cameraToPlate = TransformStamped()
+        # Static Transform Broadcaster
+        self.static_broadcaster = StaticTransformBroadcaster(self)
+
+        # Broadcast the transformation from RobotBase -> BaseTag
+        robotbase_tag = TransformStamped()
+        robotbase_tag.header.stamp = self.get_clock().now().to_msg()
+        robotbase_tag.header.frame_id = "robotbase"
+        robotbase_tag.child_frame_id = "base"
+        # TODO: The translation values need to be updated to be more accurate
+        robotbase_tag.transform.translation.x = 0.1
+        robotbase_tag.transform.translation.y = -0.1
+        robotbase_tag.transform.translation.z = 0.0
+        euler_rotation = (-math.pi/2, -math.pi/2, 0.0)  # RPY
+        quaternion = self.euler_to_quaternion(*euler_rotation)
+        robotbase_tag.transform.rotation = quaternion
+        self.static_broadcaster.sendTransform(robotbase_tag)
+        self.get_logger().info("Published RobotBase -> BaseTag")
 
         # Create a timer to periodically fetch transformations
-        self.timer = self.create_timer(1.0, self.update_transformations)
+        # self.timer = self.create_timer(1.0, self.update_transformations)
 
     def update_transformations(self):
         """Update the transformation matrices for various target frames."""
@@ -66,11 +79,31 @@ class TfFrameListener(Node):
         self.camera_to_plate = self.get_homogeneous_matrix(
             target_frame='plate')
 
-    def robot_base_to_base_tag_transform(self) -> TransformStamped:
-        # Return the Transform from RobotBase -> BaseTag
-        robot_base_to_base_tag = TransformStamped()
-        robot_base_to_base_tag.header.stamp = self.get_clock().now().to_msg()
-        robot_base_to_base_tag.header.frame_id = "base_link"
+    def euler_to_quaternion(self, roll: float, pitch: float, yaw: float) -> Quaternion:
+        """
+        Convert Euler angles to a Quaternion.
+
+        :param roll: The roll angle [rad]
+        :type roll: float
+        :param pitch: The pitch angle [rad]
+        :type pitch: float
+        :param yaw: The yaw angle [rad]
+        :type yaw: float
+        :return: The Quaternion representation of the Euler angles
+        :rtype: Quaternion
+        """
+        q = Quaternion()
+        cy = math.cos(yaw * 0.5)
+        sy = math.sin(yaw * 0.5)
+        cr = math.cos(roll * 0.5)
+        sr = math.sin(roll * 0.5)
+        cp = math.cos(pitch * 0.5)
+        sp = math.sin(pitch * 0.5)
+        q.w = cy * cr * cp + sy * sr * sp
+        q.x = cy * sr * cp - sy * cr * sp
+        q.y = cy * cr * sp + sy * sr * cp
+        q.z = sy * cr * cp - cy * sr * sp
+        return q
 
     def get_homogeneous_matrix(self, to_frame: str) -> TransformStamped:
         """
@@ -97,16 +130,12 @@ class TfFrameListener(Node):
             return None
 
 
-def main():
+def main(args=None):
     """Set up the node, spins it to handle callbacks, and gracefully shuts down."""
-    rclpy.init()
-    node = TfFrameListener()
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        rclpy.shutdown()
+    rclpy.init(args=args)
+    camera_localizer = CameraLocalizer()
+    rclpy.spin(camera_localizer)
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':
