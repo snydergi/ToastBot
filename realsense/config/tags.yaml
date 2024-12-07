@@ -1,0 +1,11 @@
+apriltag_node:
+  ros__parameters:
+    family: 36h11
+    tag:
+      ids: [0, 1, 2, 3, 4]
+      frames: [robotbase, lever , loaf_tray, plate, knife_holder]
+      sizes: [0.08, 0.056, 0.04, 0.056, 0.04] # These are tag sizes (excluding the white border)
+    detector:
+      threads: 4
+      decimate: 1.0
+      blur: 0.0

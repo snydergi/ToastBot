@@ -17,22 +17,7 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     """Init function to launch the files."""
-    pkg_share = FindPackageShare(package='realsense').find('realsense')
-    tags_yaml = os.path.join(pkg_share, 'config/tags.yaml')
-    tags_tf_rviz = os.path.join(pkg_share, 'config/tags_tf.rviz')
-
     return LaunchDescription([
-        DeclareLaunchArgument(
-            'align_depth',
-            default_value='true',
-            description='Align depth to RGB camera frame.'
-        ),
-        DeclareLaunchArgument(
-            'pointcloud.enable',
-            default_value='true',
-            description='Enable point cloud generation.'
-        ),
-
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 PathJoinSubstitution(
@@ -49,15 +34,6 @@ def generate_launch_description():
                 'enable_sync': 'true',
             }.items()
         ),
-
-        Node(
-            package='rviz2',
-            executable='rviz2',
-            arguments=[
-                '-d', tags_tf_rviz
-            ],
-            output='screen',
-        ),
         Node(
             package='apriltag_ros',
             executable='apriltag_node',
@@ -67,16 +43,14 @@ def generate_launch_description():
                 ('image_rect', '/camera/camera/color/image_raw'),
                 ('camera_info', '/camera/camera/color/camera_info')
             ],
-
             parameters=[
-                tags_yaml,
-                {'use_approximate_sync': True}  # Enable approximate synchronization
+                PathJoinSubstitution(
+                    [FindPackageShare('realsense'), 'tags.yaml']),
             ],
             arguments=['--ros-args', '--log-level', 'error']
         ),
         Node(
             package='realsense',
-            executable='apriltagTracker',
-            output='screen',
+            executable='camera_localizer'
         )
     ])
