@@ -78,8 +78,8 @@ class TransformAuditor(Node):
         """
         try:
             tf = self.buffer.lookup_transform(
-                source_frame='base',
-                target_frame=targetFrameID,
+                source_frame=targetFrameID,
+                target_frame='base',
                 time=rclpy.time.Time()
             )
             self.get_logger().info(f'Got {targetFrameID} tf!')
