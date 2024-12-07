@@ -118,6 +118,11 @@ class ToastBot(Node):
             self.get_logger().debug('Closing Gripper')
             await self.mpi.operateGripper(openGripper=False)
             
+            # Attach piece of bread to the end effector, remove from scene 
+            self.get_logger().debug('Attach bread to robot.')
+            await self.mpi.attachObject('Slice_1')
+            await self.mpi.removeObjFromScene('Slice_1')
+
             # Move the bread out of the loaf holder
             currentPose = await self.mpi.getCurrentPose()
             ########## Set theses value to match real world
@@ -166,9 +171,11 @@ class ToastBot(Node):
             await self.mpi.planPath(pathType, goal, execute=True)
             
             # Drop the bread into the toaster slot
-            # Close the gripper
             self.get_logger().debug('Opening Gripper')
             await self.mpi.operateGripper(openGripper=True)
+            
+            # Remove the collision object from the end effector
+            await self.mpi.detachObject('Slice_1')
             
             # Increment bread number so franka knows which slice to grab
             self.breadNumber += 1 
