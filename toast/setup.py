@@ -25,7 +25,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'toast_bot = toast.toast_bot:main'
+            'toast_bot = toast.toast_bot:main',
+            'transform_auditor = toast.transform_auditor:main'
         ],
     },
 )

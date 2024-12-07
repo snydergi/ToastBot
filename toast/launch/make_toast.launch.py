@@ -56,5 +56,6 @@ def generate_launch_description():
                 ),
             ),
             Node(package='toast', executable='toast_bot'),
+            Node(package='toast', executable='transform_auditor')
         ]
     )

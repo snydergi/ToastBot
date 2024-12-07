@@ -32,11 +32,13 @@ A holder with several slots for bread to be placed into. This is for pre-toasted
 Dimensions:
  -  Slot Length: 120 mm
  -  Slot Width: 20 mm
- -  Slot Depth: 80 mm
- -  Slot Spacing: 24 mm
- -  Number of Slots:
+ -  Slot Spacing (center to center): 24 mm
+ -  Overall Length: 200 mm
+ -  Overall Width: 140 mm
+ -  Height: 85 mm
+ -  Number of Slots: 4
 
-April Tag Size:
+April Tag Size: 50 mm
 
 ## Knife Handle
 Two pieces that enclose around the actual knife handle to make it a rectangular prism. \
@@ -61,7 +63,7 @@ Lever Dimensions:
    - Width: 20.4
    - Height: 11.5 mm
 
-April Tag Size: 
+April Tag Size: 70 mm
 
 ## Toaster Dial
 A dial that should press-fit or attach to the toaster dials so it's easier for the end-effector to manipulate it. \
