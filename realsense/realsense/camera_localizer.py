@@ -22,10 +22,9 @@ class CameraLocalizer(Node):
         robotbase_tag.header.stamp = self.get_clock().now().to_msg()
         robotbase_tag.header.frame_id = 'robotbase'  # TODO: Parameterize the frame ids
         robotbase_tag.child_frame_id = 'base'
-        # TODO: The translation values need to be updated to be more accurate
-        robotbase_tag.transform.translation.x = 0.1
-        robotbase_tag.transform.translation.y = -0.1
-        robotbase_tag.transform.translation.z = 0.0
+        robotbase_tag.transform.translation.x = 0.156
+        robotbase_tag.transform.translation.y = -0.085
+        robotbase_tag.transform.translation.z = -0.009
         euler_rotation = (-math.pi / 2.0, -math.pi / 2.0, 0.0)  # RPY
         quaternion = self.euler_to_quaternion(*euler_rotation)
         robotbase_tag.transform.rotation = quaternion
