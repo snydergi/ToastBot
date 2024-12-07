@@ -111,7 +111,7 @@ class ToastBot(Node):
             slice1OffsetY = 0.042
             sliceOffsetY = 0.0
             sliceOffsetZ = 0.0
-            object_approach_z_offset = 0.1
+            object_approach_z_offset = 0.075
             ##########
 
             currentPose = await self.mpi.getCurrentPose()
@@ -135,23 +135,18 @@ class ToastBot(Node):
             self.get_logger().debug('Closing Gripper')
             await self.mpi.operateGripper(openGripper=False)
 
-            # # Move the bread out of the loaf holder
-            # currentPose = await self.mpi.getCurrentPose()
-            # ########## Set theses value to match real world
-            # loafHolderOffsetZ = 0.0
-            # ##########
-            # goal = [
-            #     currentPose.pose.position.x,
-            #     currentPose.pose.position.y,
-            #     currentPose.pose.position.z + loafHolderOffsetZ,
-            #     currentPose.pose.orientation.x,
-            #     currentPose.pose.orientation.y,
-            #     currentPose.pose.orientation.z,
-            #     currentPose.pose.orientation.w
-            # ]
-            # pathType = 'POSE'
-            # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-            # await self.mpi.planPath(pathType, goal, execute=True)
+            goal = [
+                self.loaf_tray_pose.position.x,
+                self.loaf_tray_pose.position.y + sliceOffsetY * self.breadNumber,
+                self.loaf_tray_pose.position.z + 2 * object_approach_z_offset + sliceOffsetZ,
+                currentPose.pose.orientation.x,
+                currentPose.pose.orientation.y,
+                currentPose.pose.orientation.z,
+                currentPose.pose.orientation.w
+            ]
+            pathType = 'CARTESIAN'
+            self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+            await self.mpi.planPath(pathType, goal, execute=True)
 
             # # Move the bread to be directly over the toaster slot
             # ########## Set theses value to match real world
