@@ -69,13 +69,60 @@ class ToastBot(Node):
         pedastleDims = [0.3048, 0.2159, 0.2159]
         pedastleShape = 'Box'
         
-        breadSliceDimensions = [0.133, 0.110, 20]
+        loafHolder = Pose()
+        loafHolder.position.x = 0.0
+        loafHolder.position.y = 0.0
+        loafHolder.position.z = 0.0
+        loafHolderDims = [0.200, 0.140, 0.085]
+        loafHolderShape = 'Box'
+        
+        sliceOffest = 0.0
         
         slice1 = Pose()
+        slice1.position.x = 0.0
+        slice1.position.y = 0.0
+        slice1.position.z = 0.0
+        
+        slice2 = Pose()
+        slice2.position.x = 0.0
+        slice2.position.y = 0.0
+        slice2.position.z = 0.0
+        
+        slice3 = Pose()
+        slice3.position.x = 0.0
+        slice3.position.y = 0.0
+        slice3.position.z = 0.0
+        
+        slice4 = Pose()
+        slice4.position.x = 0.0
+        slice4.position.y = 0.0
+        slice4.position.z = 0.0
+        
+        breadSliceDims = [0.110, 0.020, 0.133]
+        breadSliceShape = 'Box'
+        
+        toaster = Pose()
+        toaster.position.x = 0.0
+        toaster.position.y = 0.0
+        toaster.position.z = 0.0
+        toasterDims = []
+        toasterShape = 'Box'
+        
+        plate = Pose()
+        plate.position.x = 0.0
+        plate.position.y = 0.0
+        plate.position.z = 0.0
+        plateDims = [0.125, 0.105, 0.009]
+        plateShape = 'Box'
 
-        await self.mpi.loadPlanningScene([tableSectionOne, tableSectionTwo, pedastle],
-                                         [tableSectionOneDims, tableSectionTwoDims, pedastleDims],
-                                         [section1Shape, section2Shape, pedastleShape])
+        await self.mpi.loadPlanningScene([tableSectionOne, tableSectionTwo, pedastle, 
+                                          loafHolder, slice1, slice2, slice3, slice4, toaster, plate],
+                                         [tableSectionOneDims, tableSectionTwoDims, pedastleDims,
+                                          loafHolderDims, breadSliceDims, breadSliceDims, breadSliceDims,
+                                          breadSliceDims, toasterDims, plateDims],
+                                         [section1Shape, section2Shape, pedastleShape, breadSliceShape,
+                                          breadSliceShape, breadSliceShape, breadSliceShape, toasterShape, 
+                                          plateShape])
 
         return response
     
