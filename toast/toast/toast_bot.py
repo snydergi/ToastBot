@@ -6,6 +6,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from std_srvs.srv import Empty
+import math
 
 
 class ToastBot(Node):
@@ -15,6 +16,10 @@ class ToastBot(Node):
         """TODO."""
         super().__init__('toast_bot')
         self.get_logger().info('ToastBot Started!')
+        # Links 1-7 Joint positions for home position [deg]
+        self.home_joints = [0, -45, 0, -135, 0, 90, 45]
+        # convert to radians
+        self.home_joints = [math.radians(i) for i in self.home_joints]
         client_cb_group = MutuallyExclusiveCallbackGroup()
         self.mpi = MotionPlanningInterface(self)
         self.setScene = self.create_service(Empty, 'buildScene', self.setScene_callback,
@@ -34,6 +39,9 @@ class ToastBot(Node):
         )
         self.knife_pose_sub = self.create_subscription(
             Pose, '/toast/knifePose', self.knife_pose_sub_cb, 10
+        )
+        self.goHome = self.create_service(
+            Empty, '/gohome', self.go_home, callback_group=client_cb_group
         )
         self.loaf_tray_pose = None
         self.lever_pose = None
@@ -93,7 +101,7 @@ class ToastBot(Node):
         self.get_logger().info("BreadToToaster Callback called!")
         if self.breadNumber > 4:
             self.get_logger().warn("All out of bread!")
-        else:
+        elif self.loaf_tray_pose is not None:
             # Open the gripper
             self.get_logger().debug('Opening Gripper')
             await self.mpi.operateGripper(openGripper=True)
@@ -203,6 +211,15 @@ class ToastBot(Node):
         :type msg: Pose
         """
         self.knife_pose = msg
+
+    async def go_home(self, request, response):
+        """Send robot home."""
+        # Move the arm directly above the object
+        goal = self.home_joints
+        pathType = 'JOINT'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
+        return response
 
 
 def main(args=None):
