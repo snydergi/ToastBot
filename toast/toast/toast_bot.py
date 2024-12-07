@@ -5,6 +5,7 @@ from moveitapi.mpi import MotionPlanningInterface
 import rclpy
 from rclpy.node import Node
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+import rclpy.time
 from std_srvs.srv import Empty
 import tf2_ros
 from tf2_ros.buffer import Buffer
@@ -44,12 +45,16 @@ class ToastBot(Node):
         """
         if self.toasted:
             self.get_logger().info('Toast is done!')
-            
+
             # Ensure gripper open
             await self.mpi.operateGripper(openGripper=True)
 
             # Move above toaster
-
+            try:
+                baseToasterTF = self.tfBuffer.lookup_transform('base_link', 'toaster',
+                                                               rclpy.time.Time())
+            except Exception as e:
+                self.get_logger().error(f'Failed to get transform from base to toaster: {e}')
             # Move to toast
 
             # Grasp toast
