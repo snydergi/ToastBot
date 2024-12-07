@@ -32,7 +32,7 @@ A holder with several slots for bread to be placed into. This is for pre-toasted
 Dimensions:
  -  Slot Length: 120 mm
  -  Slot Width: 20 mm
- -  Slot Spacing (center to center): 24 mm
+ -  Slot Spacing (center to center): 33.3 mm
  -  Overall Length: 200 mm
  -  Overall Width: 140 mm
  -  Height: 85 mm
@@ -114,9 +114,12 @@ April Tag Size:
 Stretch
 - Lever Dial
     tag 5
-  - total size:: 35 mm
+  - total size: 35 mm
   - tag size  : 10 mm
 
+## Toaster Dimensions
+Length: 241.3 mm
+Width: 152.4
 
 # Camera (Realsense)
 ## Dependencies
