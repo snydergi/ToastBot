@@ -53,6 +53,24 @@ class ToastBot(Node):
             try:
                 baseToasterTF = self.tfBuffer.lookup_transform('base_link', 'toaster',
                                                                rclpy.time.Time())
+                toasterTagToSlot0X = 0.0
+                toasterTagToSlot0Y = 0.0
+                toasterTagToSlot0Z = 0.0
+                slotOffset = 0.0
+                slotID = 0
+                goal = [
+                    baseToasterTF.transform.translation.x +
+                    toasterTagToSlot0X +
+                    (slotID * slotOffset),
+                    baseToasterTF.tranform.translation.y + toasterTagToSlot0Y,
+                    baseToasterTF.transform.translation.z + toasterTagToSlot0Z,
+                    baseToasterTF.transform.rotation.x,
+                    baseToasterTF.transform.rotation.y,
+                    baseToasterTF.transform.rotation.z,
+                    baseToasterTF.transform.rotation.w,
+                ]
+                pathType = 'POSE'
+                await self.mpi.planPath(pathType, goal, execute=True)
             except Exception as e:
                 self.get_logger().error(f'Failed to get transform from base to toaster: {e}')
             # Move to toast
