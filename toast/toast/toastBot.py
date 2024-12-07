@@ -96,7 +96,7 @@ class ToastBot(Node):
             
             # Move the gripper to be above a slice of toast
             try:
-                baseLoafTrans = self.buffer.lookup_transform(
+                baseLoafTrans = self.tfBuffer.lookup_transform(
                         'base_link', 'loaf_holder', rclpy.time.Time())  ########### Is this the correct transform?
             except tf2_ros.LookupException as e:
                     self.get_logger().info(f'Tranform lookup exception: {e}')
@@ -150,7 +150,7 @@ class ToastBot(Node):
             
             # Move the bread to be directly over the toaster slot
             try:
-                baseToasterTrans = self.buffer.lookup_transform(
+                baseToasterTrans = self.tfBuffer.lookup_transform(
                         'base_link', 'toaster', rclpy.time.Time())  ########### Is this the correct transform?
             except tf2_ros.LookupException as e:
                     self.get_logger().info(f'Tranform lookup exception: {e}')
@@ -208,7 +208,7 @@ class ToastBot(Node):
         
         # Move the gripper above the lever
         try:
-            baseLeverTrans = self.buffer.lookup_transform(
+            baseLeverTrans = self.tfBuffer.lookup_transform(
                     'base_link', 'toaster_lever', rclpy.time.Time())  ########### Is this the correct transform?
         except tf2_ros.LookupException as e:
             self.get_logger().info(f'Tranform lookup exception: {e}')
