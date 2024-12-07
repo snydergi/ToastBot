@@ -111,14 +111,19 @@ class ToastBot(Node):
             sliceOffsetX = 0.0
             sliceOffsetZ = 0.0
             ##########
+
+            currentPose = await self.mpi.getCurrentPose()
+
+            self.get_logger().info(f'Attempting pose: {self.loaf_tray_pose.position}')
+
             goal = [
                 self.loaf_tray_pose.position.x + sliceOffsetX * self.breadNumber,
                 self.loaf_tray_pose.position.y,
                 self.loaf_tray_pose.position.z + sliceOffsetZ,
-                self.loaf_tray_pose.orientation.x,
-                self.loaf_tray_pose.orientation.y,
-                self.loaf_tray_pose.orientation.z,
-                self.loaf_tray_pose.orientation.w
+                currentPose.pose.orientation.x,
+                currentPose.pose.orientation.y,
+                currentPose.pose.orientation.z,
+                currentPose.pose.orientation.w
             ]
             pathType = 'POSE'
             self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
