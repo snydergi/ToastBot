@@ -198,10 +198,47 @@ class ToastBot(Node):
         self.get_logger().info("PushToasterLever Callback called!")
         
         # Close the gripper
+        self.get_logger().debug('Closing Gripper')
+        await self.mpi.operateGripper(openGripper=False)
         
         # Move the gripper above the lever
+        try:
+            baseLeverTrans = self.buffer.lookup_transform(
+                    'base_link', 'toaster_lever', rclpy.time.Time())  ########### Is this the correct transform?
+        except tf2_ros.LookupException as e:
+            self.get_logger().info(f'Tranform lookup exception: {e}')
+        except tf2_ros.ConnectivityException as e:
+            self.get_logger().info(f'Transform connectivity exception: {e}')
+        except tf2_ros.ExtrapolationException as e:
+            self.get_logger().info(f'Transform extrapolation exception: {e}')
+        ########## Replace these to match the real world
+        toasterLeverOffsetX = 0.0
+        toasterLeverOffsetY = 0.0
+        toasterLeverOffsetZ = 0.0
+        toasterLeverOrientationX = 0.0
+        toasterLeverOrientationY = 0.0
+        toasterLeverOrientationZ = 0.0
+        toasterLeverOrientationW = 0.0
+        ##########
+        goal = [
+        baseLeverTrans.transform.translation.x + toasterLeverOffsetX,
+        baseLeverTrans.transform.translation.y + toasterLeverOffsetY,
+        baseLeverTrans.transform.translation.z + toasterLeverOffsetZ,
+        toasterLeverOrientationX,
+        toasterLeverOrientationY,
+        toasterLeverOrientationZ,
+        toasterLeverOrientationW
+        ]
+        pathType = 'CARTESIAN'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
+            
+        
         
         # Attach the lever collision object to the end effector, remove from scene
+        self.get_logger().debug('Attach lever to robot.')
+        await self.mpi.attachObject('Slice_1')
+        await self.mpi.removeObjFromScene('Slice_1')
         
         # Push the lever down
         
