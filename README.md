@@ -120,7 +120,7 @@ Stretch
 ## Toaster Dimensions
 Length: 241.3 mm \
 Width: 152.4 mm \
-Height: 180.975 mm \
+Height: 180.975 mm
 
 # Camera (Realsense)
 ## Dependencies
