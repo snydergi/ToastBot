@@ -24,6 +24,8 @@ class ToastBot(Node):
                                             callback_group=client_cb_group)
         self.breadToToaster = self.create_service(Empty, 'breadToToaster', self.breadToToaster_callback,
                                                   callback_group=client_cb_group)
+        self.pushToasterLever = self.create_service(Empty, 'pushToasterLever', self.pushToasterLever_callback,
+                                                    callback_group=client_cb_group)
         self.breadNumber = 1 # So the franka picks the correct piece of bread
         # Transform Listener
         self.tfBuffer = Buffer()
@@ -179,6 +181,20 @@ class ToastBot(Node):
             
             # Increment bread number so franka knows which slice to grab
             self.breadNumber += 1 
+        return response
+    
+    
+    async def pushToasterLever_callback(self, request, response):
+        """Makes the franka push the toaster lever.
+        
+        This funtion closes the gripper, moves it to the lever, 
+        pushes the lever down, and moves to ready position.
+        
+        :param request: The request object, typically an empty placeholder for this operation.
+        :type request: std_msgs/Empty
+        :param response: The response object to be returned after completing the operation.
+        :type response: std_msgs/Empty
+        """
         return response
 
 
