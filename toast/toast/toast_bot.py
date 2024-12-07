@@ -22,13 +22,48 @@ class ToastBot(Node):
         self.mpi = MotionPlanningInterface(self)
         self.setScene = self.create_service(Empty, 'buildScene', self.setScene_callback,
                                             callback_group=client_cb_group)
-        self.breadToToaster = self.create_service(Empty, 'breadToToaster', self.breadToToaster_callback,
+        self.breadToToaster = self.create_service(Empty, 'breadToToaster',
+                                                  self.breadToToaster_callback,
                                                   callback_group=client_cb_group)
         self.breadNumber = 1 # So the franka picks the correct piece of bread
         # Transform Listener
         self.tfBuffer = Buffer()
         self.tfListeneristener = TransformListener(self.tfBuffer, self)
-        
+        self.toastToPlate = self.create_service(Empty, 'toastToPlate', self.toastToPlate_callback,
+                                                callback_group=client_cb_group)
+        self.toasted = False
+
+    async def toastToPlate_callback(self, request, response):
+        """
+        Set scene of demonstration.
+
+        :param request: Request object
+        :type request: std_srvs/srv/Empty
+        :param response: Response object
+        :type response: std_srvs/srv/Empty
+        """
+        if self.toasted:
+            self.get_logger().info('Toast is done!')
+            
+            # Ensure gripper open
+            await self.mpi.operateGripper(openGripper=True)
+
+            # Move above toaster
+
+            # Move to toast
+
+            # Grasp toast
+
+            # Move up to get toast out of toaster
+
+            # Move toast to above plate
+
+            # Move toast to release position above plate
+
+            # Release toast
+
+            # Move to ready position
+        return response
 
     async def setScene_callback(self, request, response):
         """
@@ -68,7 +103,7 @@ class ToastBot(Node):
                                          [section1Shape, section2Shape, pedastleShape])
 
         return response
-    
+
     async def breadToToaster_callback(self, request, response):
         """Move a piece of bread from the loaf holder to the toaster.
         
@@ -87,17 +122,17 @@ class ToastBot(Node):
             # Open the gripper
             self.get_logger().debug('Opening Gripper')
             await self.mpi.operateGripper(openGripper=True)
-            
+
             # Move the gripper to be above a slice of toast
             try:
                 baseLoafTrans = self.buffer.lookup_transform(
                         'base_link', 'loaf_holder', rclpy.time.Time())  ########### Is this the correct transform?
             except tf2_ros.LookupException as e:
-                    self.get_logger().info(f'Tranform lookup exception: {e}')
+                self.get_logger().info(f'Tranform lookup exception: {e}')
             except tf2_ros.ConnectivityException as e:
-                    self.get_logger().info(f'Transform connectivity exception: {e}')
+                self.get_logger().info(f'Transform connectivity exception: {e}')
             except tf2_ros.ExtrapolationException as e:
-                    self.get_logger().info(f'Transform extrapolation exception: {e}')
+                self.get_logger().info(f'Transform extrapolation exception: {e}')
             ########## Set theses value to match real world
             sliceOffsetX = 0.0
             sliceOffsetZ = 0.0
@@ -114,11 +149,11 @@ class ToastBot(Node):
             pathType = 'POSE'
             self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
             await self.mpi.planPath(pathType, goal, execute=True)
-            
+
             # Close the gripper
             self.get_logger().debug('Closing Gripper')
             await self.mpi.operateGripper(openGripper=False)
-            
+
             # Move the bread out of the loaf holder
             currentPose = await self.mpi.getCurrentPose()
             ########## Set theses value to match real world
@@ -136,17 +171,17 @@ class ToastBot(Node):
             pathType = 'POSE'
             self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
             await self.mpi.planPath(pathType, goal, execute=True)
-            
+
             # Move the bread to be directly over the toaster slot
             try:
                 baseToasterTrans = self.buffer.lookup_transform(
                         'base_link', 'toaster', rclpy.time.Time())  ########### Is this the correct transform?
             except tf2_ros.LookupException as e:
-                    self.get_logger().info(f'Tranform lookup exception: {e}')
+                self.get_logger().info(f'Tranform lookup exception: {e}')
             except tf2_ros.ConnectivityException as e:
-                    self.get_logger().info(f'Transform connectivity exception: {e}')
+                self.get_logger().info(f'Transform connectivity exception: {e}')
             except tf2_ros.ExtrapolationException as e:
-                    self.get_logger().info(f'Transform extrapolation exception: {e}')
+                self.get_logger().info(f'Transform extrapolation exception: {e}')
             ########## Set theses value to match real world
             slotOffsetX = 0.0
             toasterOffsetX = 0.0
@@ -165,12 +200,12 @@ class ToastBot(Node):
             pathType = 'POSE'
             self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
             await self.mpi.planPath(pathType, goal, execute=True)
-            
+
             # Drop the bread into the toaster slot
             # Close the gripper
             self.get_logger().debug('Opening Gripper')
             await self.mpi.operateGripper(openGripper=True)
-            
+
             # Increment bread number so franka knows which slice to grab
             self.breadNumber += 1 
         return response
