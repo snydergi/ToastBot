@@ -24,11 +24,26 @@ class ToastBot(Node):
                                             callback_group=client_cb_group)
         self.breadToToaster = self.create_service(Empty, 'breadToToaster', self.breadToToaster_callback,
                                                   callback_group=client_cb_group)
-        self.breadNumber = 1 # So the franka picks the correct piece of bread
+        self.breadNumber = 1  # So the franka picks the correct piece of bread
         # Transform Listener
         self.tfBuffer = Buffer()
         self.tfListeneristener = TransformListener(self.tfBuffer, self)
-        
+        self.loaf_tray_pose_sub = self.create_subscription(
+            Pose, '/toast/loafTrayPose', self.loaf_tray_pose_sub_cb, 10
+        )
+        self.lever_pose_sub = self.create_subscription(
+            Pose, '/toast/leverPose', self.lever_pose_sub_cb, 10
+        )
+        self.plate_pose_sub = self.create_subscription(
+            Pose, '/toast/platePose', self.plate_pose_sub_cb, 10
+        )
+        self.knife_pose_sub = self.create_subscription(
+            Pose, '/toast/knifePose', self.knife_pose_sub_cb, 10
+        )
+        self.loaf_tray_pose = None
+        self.lever_pose = None
+        self.plate_pose = None
+        self.knife_pose = None
 
     async def setScene_callback(self, request, response):
         """
@@ -174,6 +189,42 @@ class ToastBot(Node):
             # Increment bread number so franka knows which slice to grab
             self.breadNumber += 1 
         return response
+
+    def loaf_tray_pose_sub_cb(self, msg: Pose):
+        """
+        Update pose of loaf tray.
+
+        :param msg: Loaf tray pose
+        :type msg: Pose
+        """
+        self.loaf_tray_pose = msg
+
+    def lever_pose_sub_cb(self, msg: Pose):
+        """
+        Update pose of lever.
+
+        :param msg: Lever pose
+        :type msg: Pose
+        """
+        self.lever_pose = msg
+
+    def plate_pose_sub_cb(self, msg: Pose):
+        """
+        Update pose of plate.
+
+        :param msg: plate pose
+        :type msg: Pose
+        """
+        self.plate_pose = msg
+
+    def knife_pose_sub_cb(self, msg: Pose):
+        """
+        Update pose of knife.
+
+        :param msg: Knife pose
+        :type msg: Pose
+        """
+        self.knife_pose = msg
 
 
 def main(args=None):

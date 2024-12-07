@@ -21,20 +21,19 @@ class TransformAuditor(Node):
         """Initialize node."""
         super().__init__('transform_auditor')
         self.get_logger().debug('Transform Auditor Started!')
-        pubQoS = QoSProfile(
-            history=QoSHistoryPolicy.KEEP_LAST,
-            depth=10,
-            durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
-            reliability=QoSReliabilityPolicy.RELIABLE,
-        )
+        # pubQoS = QoSProfile(
+        #     history=QoSHistoryPolicy.KEEP_LAST,
+        #     depth=10,
+        #     durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
+        #     reliability=QoSReliabilityPolicy.RELIABLE,
+        # )
+        pubQoS = 10
         self.buffer = Buffer()
         self.tf_listener = TransformListener(self.buffer, self)
         self.loaf_tray_pose_pub = self.create_publisher(Pose, '/toast/loafTrayPose', pubQoS)
         self.lever_pose_pub = self.create_publisher(Pose, '/toast/leverPose', pubQoS)
         self.plate_pose_pub = self.create_publisher(Pose, '/toast/platePose', pubQoS)
-        self.knife_holder_pub = self.create_publisher(
-            Pose, '/toast/knifeHolderPose', pubQoS
-        )
+        self.knife_pose_pub = self.create_publisher(Pose, '/toast/knifePose', pubQoS)
         self.timer = self.create_timer(1.0, self.timer_callback)
 
     def timer_callback(self):
@@ -46,11 +45,11 @@ class TransformAuditor(Node):
         if loaf_tray_tf:
             self.loaf_tray_pose_pub.publish(self.transform_to_pose(loaf_tray_tf))
         if lever_tf:
-            self.loaf_tray_pose_pub.publish(self.transform_to_pose(lever_tf))
+            self.lever_pose_pub.publish(self.transform_to_pose(lever_tf))
         if plate_tf:
-            self.loaf_tray_pose_pub.publish(self.transform_to_pose(plate_tf))
+            self.plate_pose_pub.publish(self.transform_to_pose(plate_tf))
         if knife_tf:
-            self.loaf_tray_pose_pub.publish(self.transform_to_pose(knife_tf))
+            self.knife_pose_pub.publish(self.transform_to_pose(knife_tf))
 
     def transform_to_pose(self, tf: Transform) -> Pose:
         """
