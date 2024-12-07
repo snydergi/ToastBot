@@ -112,7 +112,7 @@ class ToastBot(Node):
                 baseLoafTrans.transform.rotation.z,
                 baseLoafTrans.transform.rotation.w
                 ]
-            pathType = 'POSE'
+            pathType = 'CARTESIAN'
             self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
             await self.mpi.planPath(pathType, goal, execute=True)
             
@@ -139,7 +139,7 @@ class ToastBot(Node):
                 currentPose.pose.orientation.z,
                 currentPose.pose.orientation.w
                 ]
-            pathType = 'POSE'
+            pathType = 'CARTESIAN'
             self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
             await self.mpi.planPath(pathType, goal, execute=True)
             
@@ -168,7 +168,7 @@ class ToastBot(Node):
                 baseToasterTrans.transform.rotation.z,
                 baseToasterTrans.transform.rotation.w
                 ]
-            pathType = 'POSE'
+            pathType = 'CARTESIAN'
             self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
             await self.mpi.planPath(pathType, goal, execute=True)
             
@@ -195,6 +195,22 @@ class ToastBot(Node):
         :param response: The response object to be returned after completing the operation.
         :type response: std_msgs/Empty
         """
+        self.get_logger().info("PushToasterLever Callback called!")
+        
+        # Close the gripper
+        
+        # Move the gripper above the lever
+        
+        # Attach the lever collision object to the end effector, remove from scene
+        
+        # Push the lever down
+        
+        # Remove the lever collision object from the end effector
+        
+        # Move the gripper up
+        
+        # Move away from the toaster
+        
         return response
 
 
