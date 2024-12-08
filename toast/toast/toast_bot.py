@@ -177,45 +177,73 @@ class ToastBot(Node):
             goal = [
                 self.loaf_tray_pose.position.x,
                 self.loaf_tray_pose.position.y + sliceOffsetY * self.breadNumber,
-                # self.loaf_tray_pose.position.z + 2 * object_approach_z_offset + sliceOffsetZ,
-                0.488,
-                self.cartesianAngle[0],
-                self.cartesianAngle[1],
-                self.cartesianAngle[2],
-                self.cartesianAngle[3]
+                self.loaf_tray_pose.position.z + 4 * object_approach_z_offset + sliceOffsetZ,
+                currentPose.pose.orientation.x,
+                currentPose.pose.orientation.y,
+                currentPose.pose.orientation.z,
+                currentPose.pose.orientation.w
             ]
-            pathType = 'CARTESIAN'
+            pathType = 'POSE'
             self.get_logger().info(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
             await self.mpi.planPath(pathType, goal, execute=True)
 
-            # # Move the bread to be directly over the toaster slot
-            # ########## Set theses value to match real world
-            # ### Offset from lever to toast slot
+            # Return to home position
+            goal = self.home_joints
+            pathType = 'JOINT'
+            self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+            await self.mpi.planPath(pathType, goal, execute=True)
+
+            # Move the bread to be directly over the toaster slot
+            ########## Set theses value to match real world
+            ### Offset from lever to toast slot
             # slotOffsetX = 0.0
-            # toasterOffsetX = 0.0
-            # toasterOffsetY = 0.0
-            # toasterOffsetZ = 0.0
-            # ##########
-            # goal = [
-            #     self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-            #     self.lever_pose.position.y + toasterOffsetY,
-            #     self.lever_pose.position.z + toasterOffsetZ,
-            #     self.lever_pose.orientation.x,
-            #     self.lever_pose.orientation.y,
-            #     self.lever_pose.orientation.z,
-            #     self.lever_pose.orientation.w
-            # ]
-            # pathType = 'POSE'
-            # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-            # await self.mpi.planPath(pathType, goal, execute=True)
+            toasterOffsetX = 0.19
+            toasterOffsetY = 0.0005
+            toasterOffsetZ = 0.3
+            ##########
+            goal = [
+                # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
+                self.lever_pose.position.x + toasterOffsetX,
+                self.lever_pose.position.y + toasterOffsetY,
+                self.lever_pose.position.z + toasterOffsetZ,
+                currentPose.pose.orientation.x,
+                currentPose.pose.orientation.y,
+                currentPose.pose.orientation.z,
+                currentPose.pose.orientation.w
+            ]
+            pathType = 'POSE'
+            self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+            await self.mpi.planPath(pathType, goal, execute=True)
 
-            # # Drop the bread into the toaster slot
-            # # Close the gripper
-            # self.get_logger().debug('Opening Gripper')
-            # await self.mpi.operateGripper(openGripper=True)
+            # Move the bread into the slot
+            ########## Set theses value to match real world
+            ### Offset from lever to toast slot
+            # slotOffsetX = 0.0
+            toasterOffsetX = 0.19
+            toasterOffsetY = 0.0005
+            toasterOffsetZ = 0.2
+            ##########
+            goal = [
+                # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
+                self.lever_pose.position.x + toasterOffsetX,
+                self.lever_pose.position.y + toasterOffsetY,
+                self.lever_pose.position.z + toasterOffsetZ,
+                currentPose.pose.orientation.x,
+                currentPose.pose.orientation.y,
+                currentPose.pose.orientation.z,
+                currentPose.pose.orientation.w
+            ]
+            pathType = 'POSE'
+            self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+            await self.mpi.planPath(pathType, goal, execute=True)
 
-            # # Increment bread number so franka knows which slice to grab
-            # self.breadNumber += 1
+            # Drop the bread into the toaster slot
+            # Close the gripper
+            self.get_logger().debug('Opening Gripper')
+            await self.mpi.operateGripper(openGripper=True)
+
+            # Increment bread number so franka knows which slice to grab
+            self.breadNumber += 1
         return response
 
     def loaf_tray_pose_sub_cb(self, msg: Pose):
