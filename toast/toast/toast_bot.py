@@ -202,7 +202,7 @@ class ToastBot(Node):
             # slotOffsetX = 0.0
             toasterOffsetX = 0.19
             toasterOffsetY = 0.0005
-            toasterOffsetZ = 0.3
+            toasterOffsetZ = 0.25
             ##########
             goal = [
                 # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
