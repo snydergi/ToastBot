@@ -129,9 +129,10 @@ class ToastBot(Node):
         return response
 
     async def breadToToaster_callback(self, request, response):
-        """Move a piece of bread from the loaf holder to the toaster.
+        """
+        Move a piece of bread from the loaf holder to the toaster.
 
-        This function moves the gripper to a piece of bread, grips the piece of bread, 
+        This function moves the gripper to a piece of bread, grips the piece of bread,
         moves the piece of bread to the toaster, then releasses the bread.
 
         :param request: The request object, typically an empty placeholder for this operation.
@@ -148,7 +149,7 @@ class ToastBot(Node):
             await self.mpi.operateGripper(openGripper=True)
 
             # Move the gripper to be above a slice of toast
-            ########## Set theses value to match real world
+            #       Set theses value to match real world
             # slice1OffsetY = 0.042
             sliceOffsetY = 0.0
             sliceOffsetZ = 0.0
