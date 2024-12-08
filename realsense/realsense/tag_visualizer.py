@@ -6,49 +6,45 @@ visual markers on the detected tags, and providing relevant logging information.
 the `sensor_msgs/Image` topic for camera data and the `apriltag_msgs/AprilTagDetectionArray`
 topic for AprilTag detection messages.
 
-Classes:
---------
-- `ApriltagsNode`: A custom ROS 2 node that subscribes to the camera feed and AprilTag
+Classes
+-------
+- `TagVisualizer`: A custom ROS 2 node that subscribes to the camera feed and AprilTag
   detection topics, processes the data, and displays the live feed with visual markers.
 
-Functions:
-----------
+Functions
+---------
 - `detection_callback(msg)`: Handles AprilTag detection messages, extracts information
   about the first detected tag (e.g., ID, center coordinates), and updates the target
   detection status.
 - `listener_callback(data)`: Processes the live camera feed, overlays a visual marker
   (circle) on the detected tag's position, and displays the feed using OpenCV.
 
-Main Execution:
----------------
+Main Execution
+--------------
 - Initializes the ROS 2 node.
 - Subscribes to:
   - `/camera/camera/color/image_raw`: The camera's RGB image topic.
   - `detections`: The AprilTag detection topic.
-- Publishes:
-  - `/camera/camera/color/image_raw` (reserved for future extensions if needed).
 - Spins the node until shutdown, allowing continuous tag detection and visualization.
 
-Dependencies:
--------------
+Dependencies
+------------
 - ROS 2
 - OpenCV (for image processing and visualization)
 - cv_bridge (for converting ROS image messages to OpenCV format)
 - AprilTag ROS 2 package (`apriltag_msgs` for detection messages)
 
-Usage:
-------
+Usage
+-----
 Run the node as part of a ROS 2 system where a camera node (e.g., RealSense) is publishing
 RGB images and an AprilTag detection node is running. This node processes and visualizes
 the detections on the live feed.
 
-Topics:
--------
+Topics
+------
 - Subscribed:
   - `/camera/camera/color/image_raw`: RGB image stream.
   - `detections`: AprilTag detection data.
-- Published:
-  - `/camera/camera/color/image_raw`: (Future extensions, not utilized currently).
 """
 
 import rclpy
@@ -62,24 +58,28 @@ import numpy as np
 
 class TagVisualizer(Node):
     """
-    The AprilTags node.
+    ROS 2 Node for AprilTags Detection and Visualization.
 
-    Attributes:
-    -----------
-    publisher : rclpy.Publisher
-        Publishes processed image data (reserved for future use).
-    subscription : rclpy.Subscription
-        Subscribes to the live RGB camera feed.
-    detection_sub : rclpy.Subscription
-        Subscribes to the AprilTag detection messages.
-    logger : function
-        Logger for displaying information in the console.
+    This node subscribes to an RGB camera feed and AprilTag detection messages, processes
+    the data, and visualizes the detected tags by overlaying markers on the live feed.
+
+    Attributes
+    ----------
+    publisher : rclpy.publisher.Publisher
+        A publisher reserved for future use (e.g., publishing processed image data).
+    subscription : rclpy.subscription.Subscription
+        Subscribes to the live RGB camera feed topic.
+    detection_sub : rclpy.subscription.Subscription
+        Subscribes to the AprilTag detection messages topic.
+    logger : Callable
+        Logs messages to the ROS 2 console.
     target_detection : bool
         Indicates whether an AprilTag is currently detected.
     target_centre : tuple or None
         Coordinates (x, y) of the detected tag's center, or None if no tag is detected.
     bridge : CvBridge
-        Converts ROS image messages to OpenCV format.
+        Converts ROS image messages to OpenCV format for processing.
+
     """
 
     def __init__(self):
@@ -99,12 +99,14 @@ class TagVisualizer(Node):
 
     def detection_callback(self, msg):
         """
-        Detect Callback function for AprilTag detections.
+        Handle AprilTag detection messages.
 
-        Parameters:
-        -----------
-        msg : AprilTagDetectionArray
-            The AprilTag detection array message.
+        Extracts information about the first detected tag (e.g., ID, center coordinates),
+        updates the detection status, and logs the detection.
+
+        :param msg: AprilTag detection array message containing detected tag details.
+        :type msg: apriltag_msgs.msg.AprilTagDetectionArray
+
         """
         if len(msg.detections) > 0:
             detection = msg.detections[0]
@@ -120,12 +122,15 @@ class TagVisualizer(Node):
 
     def listener_callback(self, data):
         """
-        Listen callback function for processing the live camera feed.
+        Process and visualize the live camera feed.
 
-        Parameters:
-        -----------
-        data : sensor_msgs.msg.Image
-            The RGB image message from the camera.
+        Converts the RGB camera feed to OpenCV format, overlays a visual marker (circle)
+        on the detected tag's position if a tag is detected, and displays the feed using OpenCV.
+
+
+        :param data: The RGB image message from the camera
+        :type data: sensor_msgs.msg.Image.
+
         """
         current_frame = self.bridge.imgmsg_to_cv2(
             data, desired_encoding='bgr8')
