@@ -1,6 +1,12 @@
+"""
+Publishes a static transformation from the `robotbase` frame to (`base`) for camera localization.
+
+The node uses the `tf2_ros.StaticTransformBroadcaster` to broadcast the static transform.
+"""
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import TransformStamped, Quaternion
+# from geometry_msgs.msg import TransformStamped, Quaternion
+from geometry_msgs.msg import Quaternion
 from tf2_ros import TransformStamped
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 import math
