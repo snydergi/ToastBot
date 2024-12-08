@@ -49,7 +49,8 @@ def generate_launch_description():
                 arguments=[
                     '-d', PathJoinSubstitution(
                         [FindPackageShare('toast'), 'toast_view.rviz']
-                    )
+                    ),
+                    '--ros-args', '--log-level', 'WARN'
                 ],
                 condition=IfCondition(
                     EqualsSubstitution(LaunchConfiguration('demo'), 'False')
