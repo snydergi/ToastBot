@@ -297,7 +297,7 @@ class ToastBot(Node):
             # Move to press lever
             leverPressOffsetX = 0.0
             leverPressOffsetY = 0.005
-            leverPressOffsetZ = 0.043
+            leverPressOffsetZ = 0.0475
 
             goal = [
                 self.lever_pose.position.x + leverPressOffsetX,
