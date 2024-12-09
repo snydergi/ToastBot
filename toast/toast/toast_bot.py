@@ -90,7 +90,7 @@ class ToastBot(Node):
             Empty, '/openGripper', self.openGripper_callback, callback_group=client_cb_group
         )
         self.closeGripper = self.create_service(
-            Empty, '/openGripper', self.closeGripper_callback, callback_group=client_cb_group
+            Empty, '/closeGripper', self.closeGripper_callback, callback_group=client_cb_group
         )
         self.loaf_tray_pose = None
         self.lever_pose = None
@@ -180,7 +180,7 @@ class ToastBot(Node):
             ]
             pathType = 'POSE'
             self.get_logger().info(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-            await self.mpi.planPath(pathType, goal, execute=True)
+            await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.25)
 
             # Close the gripper
             self.get_logger().debug('Closing Gripper')
@@ -198,7 +198,7 @@ class ToastBot(Node):
             ]
             pathType = 'POSE'
             self.get_logger().info(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-            await self.mpi.planPath(pathType, goal, execute=True)
+            await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.05)
 
             # Return to home position
             goal = self.home_joints
@@ -307,7 +307,7 @@ class ToastBot(Node):
             # Move to press lever
             leverPressOffsetX = 0.0
             leverPressOffsetY = 0.005
-            leverPressOffsetZ = 0.0475
+            leverPressOffsetZ = 0.048
 
             goal = [
                 self.lever_pose.position.x + leverPressOffsetX,
@@ -389,7 +389,7 @@ class ToastBot(Node):
         # slotOffsetX = 0.0
         toasterOffsetX = 0.19
         toasterOffsetY = 0.0005
-        toasterOffsetZ = 0.170
+        toasterOffsetZ = 0.165
         ##########
         goal = [
             # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
@@ -403,7 +403,7 @@ class ToastBot(Node):
         ]
         pathType = 'POSE'
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        await self.mpi.planPath(pathType, goal, execute=True)
+        await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.05)
 
         # Close the gripper on the toast
         self.get_logger().debug('Closing Gripper')
@@ -429,7 +429,7 @@ class ToastBot(Node):
         ]
         pathType = 'POSE'
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        await self.mpi.planPath(pathType, goal, execute=True)
+        await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.05)
 
         # Move the toast to be directly over the plate
         ########## Set theses value to match real world
