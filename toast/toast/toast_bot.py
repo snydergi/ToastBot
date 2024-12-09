@@ -389,7 +389,7 @@ class ToastBot(Node):
         # slotOffsetX = 0.0
         toasterOffsetX = 0.19
         toasterOffsetY = 0.0005
-        toasterOffsetZ = 0.175
+        toasterOffsetZ = 0.170
         ##########
         goal = [
             # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
@@ -415,13 +415,83 @@ class ToastBot(Node):
         # slotOffsetX = 0.0
         toasterOffsetX = 0.19
         toasterOffsetY = 0.0005
-        toasterOffsetZ = 0.275
+        toasterOffsetZ = 0.28
         ##########
         goal = [
             # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
             self.lever_pose.position.x + toasterOffsetX,
             self.lever_pose.position.y + toasterOffsetY,
             self.lever_pose.position.z + toasterOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
+
+        # Move the toast to be directly over the plate
+        ########## Set theses value to match real world
+        ### Offset from lever to toast slot
+        # slotOffsetX = 0.0
+        plateOffsetX = 0.0
+        plateOffsetY = 0.0
+        plateOffsetZ = 0.5
+        ##########
+        goal = [
+            # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
+            self.plate_pose.position.x + plateOffsetX,
+            self.plate_pose.position.y + plateOffsetY,
+            self.plate_pose.position.z + plateOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
+
+        # Move the toast to be closer to the plate
+        ########## Set theses value to match real world
+        ### Offset from lever to toast slot
+        # slotOffsetX = 0.0
+        plateOffsetX = 0.0
+        plateOffsetY = 0.025
+        plateOffsetZ = 0.175
+        ##########
+        goal = [
+            # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
+            self.plate_pose.position.x + plateOffsetX,
+            self.plate_pose.position.y + plateOffsetY,
+            self.plate_pose.position.z + plateOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
+
+        # Open the gripper to drop the toast
+        self.get_logger().debug('Opening Gripper')
+        await self.mpi.operateGripper(openGripper=True)
+
+        # Guide the toast release to the plate
+        ########## Set theses value to match real world
+        ### Offset from lever to toast slot
+        # slotOffsetX = 0.0
+        plateOffsetX = 0.0
+        plateOffsetY = 0.1
+        plateOffsetZ = 0.175
+        ##########
+        goal = [
+            # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
+            self.plate_pose.position.x + plateOffsetX,
+            self.plate_pose.position.y + plateOffsetY,
+            self.plate_pose.position.z + plateOffsetZ,
             currentPose.pose.orientation.x,
             currentPose.pose.orientation.y,
             currentPose.pose.orientation.z,
