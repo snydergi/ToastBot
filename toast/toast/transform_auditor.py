@@ -82,10 +82,9 @@ class TransformAuditor(Node):
                 target_frame='base',
                 time=rclpy.time.Time()
             )
-            self.get_logger().info(f'Got {targetFrameID} tf!')
             return tf.transform
         except Exception as e:
-            self.get_logger().error(f'Failed transform to {targetFrameID} with exception: {e}')
+            self.get_logger().debug(f'Failed transform to {targetFrameID} with exception: {e}')
         return None
 
 
