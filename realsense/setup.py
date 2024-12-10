@@ -15,6 +15,7 @@ setup(
             'config/tags.yaml',
             'launch/camera.launch.py',
             'launch/visualize_tags.launch.py',
+            'launch/yolov8.launch.py'
         ]),
     ],
     install_requires=['setuptools'],  # Dependencies for Python
@@ -28,6 +29,7 @@ setup(
         'console_scripts': [
             'camera_localizer = realsense.camera_localizer:main',
             'tag_visualizer = realsense.tag_visualizer:main',
+            'yolov8 = realsense.yolov8:main',
         ],
     },
 )
