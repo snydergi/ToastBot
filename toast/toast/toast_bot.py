@@ -1,6 +1,5 @@
 """TODO."""
 
-from geometry_msgs.msg import Pose
 from moveitapi.mpi import MotionPlanningInterface
 import rclpy
 from rclpy.node import Node
@@ -9,6 +8,8 @@ from std_srvs.srv import Empty
 import math
 import numpy as np
 from geometry_msgs.msg import Pose, PoseStamped
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
 
 
 def quaternion_from_euler(ai, aj, ak):
@@ -58,6 +59,10 @@ class ToastBot(Node):
         self.home_joints = [0, -45, 0, -135, 0, 90, 45]
         # convert to radians
         self.home_joints = [math.radians(i) for i in self.home_joints]
+
+        self.buffer = Buffer()
+        self.tf_listener = TransformListener(self.buffer, self)
+
         client_cb_group = MutuallyExclusiveCallbackGroup()
         self.mpi = MotionPlanningInterface(self)
         self.setScene = self.create_service(Empty, '/buildScene', self.setScene_callback,
@@ -93,11 +98,15 @@ class ToastBot(Node):
         self.closeGripper = self.create_service(
             Empty, '/closeGripper', self.closeGripper_callback, callback_group=client_cb_group
         )
+        self.actuateAndGrab = self.create_service(
+            Empty, '/actuateAndGrab', self.actuateAndGrab_callback, callback_group=client_cb_group
+        )
         self.loaf_tray_pose = None
         self.lever_pose = None
         self.plate_pose = None
         self.knife_pose = None
         self.cartesianAngle = quaternion_from_euler(-np.pi, 0, -np.pi / 4)
+        self.leverDown = False
 
     async def setScene_callback(self, request, response):
         """
@@ -309,7 +318,7 @@ class ToastBot(Node):
             # Move to press lever
             leverPressOffsetX = 0.0
             leverPressOffsetY = 0.005
-            leverPressOffsetZ = 0.048
+            leverPressOffsetZ = 0.045
 
             goal = [
                 self.lever_pose.position.x + leverPressOffsetX,
@@ -356,6 +365,111 @@ class ToastBot(Node):
             # open the gripper
             await self.mpi.operateGripper(openGripper=True)
 
+        return response
+
+    async def actuateAndGrab_callback(self, request, response):
+        """TODO."""
+        self.get_logger().info('ActuateAndGrab Callback called!')
+        if self.lever_pose is not None:
+            # Close the gripper
+            self.get_logger().debug('Closing Gripper')
+            await self.mpi.operateGripper(openGripper=True)
+            await self.mpi.operateGripper(openGripper=False)
+
+            leverUp = self.lever_pose.position.z
+
+            # Move the gripper to be above lever
+            ########## Set theses value to match real world
+            # slice1OffsetY = 0.042
+            leverPrepOffsetX = 0.0
+            leverPrepOffsetY = 0.005
+            leverPrepOffsetZ = 0.201
+            ##########
+
+            currentPose = await self.mpi.getCurrentPose()
+
+            goal = [
+                self.lever_pose.position.x + leverPrepOffsetX,
+                self.lever_pose.position.y + leverPrepOffsetY,
+                self.lever_pose.position.z + leverPrepOffsetZ,
+                currentPose.pose.orientation.x,
+                currentPose.pose.orientation.y,
+                currentPose.pose.orientation.z,
+                currentPose.pose.orientation.w
+            ]
+            pathType = 'POSE'
+            self.get_logger().info(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+            await self.mpi.planPath(pathType, goal, execute=True)
+
+            # Move to press lever
+            leverPressOffsetX = 0.0
+            leverPressOffsetY = 0.005
+            leverPressOffsetZ = 0.045
+
+            goal = [
+                self.lever_pose.position.x + leverPressOffsetX,
+                self.lever_pose.position.y + leverPressOffsetY,
+                self.lever_pose.position.z + leverPressOffsetZ,
+                currentPose.pose.orientation.x,
+                currentPose.pose.orientation.y,
+                currentPose.pose.orientation.z,
+                currentPose.pose.orientation.w
+            ]
+            pathType = 'POSE'
+            self.get_logger().info(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+            await self.mpi.planPath(pathType, goal, execute=True)
+
+            # Move the gripper to be above lever
+            ########## Set theses value to match real world
+            # slice1OffsetY = 0.042
+            leverPrepOffsetX = 0.0
+            leverPrepOffsetY = 0.005
+            leverPrepOffsetZ = 0.201
+            ##########
+
+            currentPose = await self.mpi.getCurrentPose()
+
+            goal = [
+                self.lever_pose.position.x + leverPrepOffsetX,
+                self.lever_pose.position.y + leverPrepOffsetY,
+                self.lever_pose.position.z + leverPrepOffsetZ,
+                currentPose.pose.orientation.x,
+                currentPose.pose.orientation.y,
+                currentPose.pose.orientation.z,
+                currentPose.pose.orientation.w
+            ]
+            pathType = 'POSE'
+            self.get_logger().info(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+            await self.mpi.planPath(pathType, goal, execute=True)
+
+            # Return to home position
+            goal = self.home_joints
+            pathType = 'JOINT'
+            self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+            await self.mpi.planPath(pathType, goal, execute=True)
+
+            # open the gripper
+            await self.mpi.operateGripper(openGripper=True)
+
+            # while True:
+            #     try:
+            #         tf = self.buffer.lookup_transform(
+            #             source_frame='lever',
+            #             target_frame='base',
+            #             time=rclpy.time.Time()
+            #         )
+            #         self.get_logger().info(f'LeverUp: {leverUp}')
+            #         self.get_logger().info(f'LeverPosZ: {tf.transform.translation.z}')
+            #         if (tf.transform.translation.z > (leverUp - 0.02)):
+            #             break
+            #     except Exception as e:
+            #         self.get_logger().debug(f'Failed transform to lever with exception: {e}')
+
+            while self.leverDown:
+                self.get_logger().info(f'LeverDown?: {self.leverDown}')
+
+            self.get_logger().info('Made it out of while loop!')
+            await self.mpi.operateGripper(openGripper=False)
         return response
 
     async def toastToPlate_callback(self, request, response):
@@ -541,7 +655,12 @@ class ToastBot(Node):
         :param msg: Lever pose
         :type msg: Pose
         """
+        self.get_logger().info('Updated Lever Pose!')
         self.lever_pose = msg
+        self.leverDown = False
+        if msg.position.z < 0.24:
+            self.leverDown = True
+        
 
     def plate_pose_sub_cb(self, msg: Pose):
         """
