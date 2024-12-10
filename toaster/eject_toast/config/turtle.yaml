@@ -1,0 +1,10 @@
+robot:
+  wheel_radius: 0.3
+  max_velocity: 1.75
+  gravity_accel: 9.81
+  turtle_accel: 1.05
+
+  wheel_1: 1.0
+  wheel_2: 1.0
+  caster1_wheel: 2.0
+
