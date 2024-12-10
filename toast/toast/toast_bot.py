@@ -101,12 +101,24 @@ class ToastBot(Node):
         self.actuateAndGrab = self.create_service(
             Empty, '/actuateAndGrab', self.actuateAndGrab_callback, callback_group=client_cb_group
         )
+        self.timer = self.create_timer(1 / 10, self.timer_cb)
         self.loaf_tray_pose = None
         self.lever_pose = None
         self.plate_pose = None
         self.knife_pose = None
         self.cartesianAngle = quaternion_from_euler(-np.pi, 0, -np.pi / 4)
-        self.leverDown = False
+        self.leverPrevUp = True
+        self.leverCurUp = True
+
+    async def timer_cb(self):
+        """Run timer."""
+        if self.loaf_tray_pose is not None:
+            if not self.leverPrevUp and self.leverCurUp:
+                await self.plateBread()
+
+    async def plateBread(self):
+        """TODO."""
+        self.get_logger().info('Lever is up now!')
 
     async def setScene_callback(self, request, response):
         """
@@ -376,8 +388,6 @@ class ToastBot(Node):
             await self.mpi.operateGripper(openGripper=True)
             await self.mpi.operateGripper(openGripper=False)
 
-            leverUp = self.lever_pose.position.z
-
             # Move the gripper to be above lever
             ########## Set theses value to match real world
             # slice1OffsetY = 0.042
@@ -448,28 +458,9 @@ class ToastBot(Node):
             self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
             await self.mpi.planPath(pathType, goal, execute=True)
 
-            # open the gripper
-            await self.mpi.operateGripper(openGripper=True)
+            # # open the gripper
+            # await self.mpi.operateGripper(openGripper=True)
 
-            # while True:
-            #     try:
-            #         tf = self.buffer.lookup_transform(
-            #             source_frame='lever',
-            #             target_frame='base',
-            #             time=rclpy.time.Time()
-            #         )
-            #         self.get_logger().info(f'LeverUp: {leverUp}')
-            #         self.get_logger().info(f'LeverPosZ: {tf.transform.translation.z}')
-            #         if (tf.transform.translation.z > (leverUp - 0.02)):
-            #             break
-            #     except Exception as e:
-            #         self.get_logger().debug(f'Failed transform to lever with exception: {e}')
-
-            while self.leverDown:
-                self.get_logger().info(f'LeverDown?: {self.leverDown}')
-
-            self.get_logger().info('Made it out of while loop!')
-            await self.mpi.operateGripper(openGripper=False)
         return response
 
     async def toastToPlate_callback(self, request, response):
@@ -657,10 +648,11 @@ class ToastBot(Node):
         """
         self.get_logger().info('Updated Lever Pose!')
         self.lever_pose = msg
-        self.leverDown = False
-        if msg.position.z < 0.24:
-            self.leverDown = True
-        
+        if self.leverPrevUp and self.lever_pose.position.z < 0.25:
+            self.leverPrevUp = False
+            self.leverCurUp = False
+        elif not self.leverPrevUp and self.lever_pose.position.z > 0.25:
+            self.leverCurUp = True
 
     def plate_pose_sub_cb(self, msg: Pose):
         """
