@@ -82,8 +82,8 @@ class ToastBot(Node):
         self.plate_pose_sub = self.create_subscription(
             Pose, '/toast/platePose', self.plate_pose_sub_cb, 10
         )
-        self.knife_pose_sub = self.create_subscription(
-            Pose, '/toast/knifePose', self.knife_pose_sub_cb, 10
+        self.brush_pose_sub = self.create_subscription(
+            Pose, '/toast/brushPose', self.brush_pose_sub_cb, 10
         )
         self.goHome = self.create_service(
             Empty, '/gohome', self.go_home, callback_group=client_cb_group
@@ -107,7 +107,7 @@ class ToastBot(Node):
         self.loaf_tray_pose = None
         self.lever_pose = None
         self.plate_pose = None
-        self.knife_pose = None
+        self.brush_pose = None
         self.cartesianAngle = quaternion_from_euler(-np.pi, 0, -np.pi / 4)
         self.leverPrevUp = True
         self.leverCurUp = True
@@ -312,7 +312,54 @@ class ToastBot(Node):
     
     async def postToastButter_cb(self):
         """Post toast callback with buttering."""
-        pass
+        
+        self.get_logger().info('Post Toast Called!')
+        currentPose = None
+
+        if currentPose is None:
+            self.executor.spin_once(timeout_sec=0.1)
+            currentPose: PoseStamped = self.mpi.getCurrentPose()
+            self.get_logger().info('Calling!')
+            
+        ##### Post Tost goes here
+        
+        # Open the gripper before moving
+        self.get_logger().info('Opening the gripper!')
+        if gripperState is None:
+            self.executor.spin_once(timeout_sec=0.1)
+            await self.mpi.operateGripper(openGripper=True)
+            self.get_logger().info('Calling the gripper')
+
+        self.get_logger().info('Opened gripper!')
+        
+        # Move from home position to the brush
+        ## Offsets from april tag to brush handle
+        brushOffsetX = 0.0
+        brushOffsetY = 0.07
+        brushOffsetZ = 0.150
+        
+        goal = [
+            self.brush_pose.position.x + brushOffsetX,
+            self.brush_pose.position.y + brushOffsetY,
+            self.brush_pose.position.z + brushOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        
+        # Close the gripper around the brush handle
+        self.get_logger().info('Closing the gripper!')
+        if gripperState is None:
+            self.executor.spin_once(timeout_sec=0.1)
+            await self.mpi.operateGripper(openGripper=False)
+            self.get_logger().info('Calling the gripper')
+
+        self.get_logger().info('Closed gripper!')
+        
+
 
     async def setScene_callback(self, request, response):
         """
@@ -971,14 +1018,14 @@ class ToastBot(Node):
         """
         self.plate_pose = msg
 
-    def knife_pose_sub_cb(self, msg: Pose):
+    def brush_pose_sub_cb(self, msg: Pose):
         """
-        Update pose of knife.
+        Update pose of brush.
 
-        :param msg: Knife pose
+        :param msg: Brush pose
         :type msg: Pose
         """
-        self.knife_pose = msg
+        self.brush_pose = msg
 
     async def go_home(self, request, response):
         """Send robot home."""
