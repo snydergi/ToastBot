@@ -309,6 +309,10 @@ class ToastBot(Node):
         # self.get_logger().info('All done!')
         self.executor.shutdown()
         return []
+    
+    async def postToastButter_cb(self):
+        """Post toast callback with buttering."""
+        pass
 
     async def setScene_callback(self, request, response):
         """
