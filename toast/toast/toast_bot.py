@@ -78,11 +78,14 @@ class ToastBot(Node):
         self.lever_pose_sub = self.create_subscription(
             Pose, '/toast/leverPose', self.lever_pose_sub_cb, 10
         )
-        self.plate_pose_sub = self.create_subscription(
-            Pose, '/toast/platePose', self.plate_pose_sub_cb, 10
+        self.slide_pose_sub = self.create_subscription(
+            Pose, '/toast/slidePose', self.slide_pose_sub_cb, 10
         )
-        self.knife_pose_sub = self.create_subscription(
-            Pose, '/toast/knifePose', self.knife_pose_sub_cb, 10
+        self.brush_pose_sub = self.create_subscription(
+            Pose, '/toast/brushPose', self.brush_pose_sub_cb, 10
+        )
+        self.bowl_pose_sub = self.create_subscription(
+            Pose, '/toast/bowlPose', self.bowl_pose_sub_cb, 10
         )
         self.goHome = self.create_service(
             Empty, '/gohome', self.go_home, callback_group=client_cb_group
@@ -105,7 +108,7 @@ class ToastBot(Node):
         self.timer = self.create_timer(1.0, self.timer_cb)
         self.loaf_tray_pose = None
         self.lever_pose = None
-        self.plate_pose = None
+        self.slide_pose = None
         self.knife_pose = None
         self.cartesianAngle = quaternion_from_euler(-np.pi, 0, -np.pi / 4)
         self.leverPrevUp = True
@@ -128,8 +131,6 @@ class ToastBot(Node):
 
         self.get_logger().info('Post Toast Called!')
         currentPose: PoseStamped = await self.mpi.getCurrentPose()
-        
-        
 
         self.get_logger().info('Got current pose!')
 
@@ -156,7 +157,7 @@ class ToastBot(Node):
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
         await self.mpi.planPath(pathType, goal, execute=True)
 
-        # Move the bread to be directly over the toaster slot
+        # Move to be directly over the toaster slot
         ########## Set theses value to match real world
         ### Offset from lever to toast slot
         # slotOffsetX = 0.0
@@ -164,12 +165,10 @@ class ToastBot(Node):
         # toasterOffsetY = 0.005
         # toasterOffsetZ = 0.20
 
-        toasterOffsetX = 0.19
+        toasterOffsetX = 0.175
         toasterOffsetY = 0.01
         toasterOffsetZ = 0.15
-        ##########
         goal = [
-            # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
             self.lever_pose.position.x + toasterOffsetX,
             self.lever_pose.position.y + toasterOffsetY,
             self.lever_pose.position.z + toasterOffsetZ,
@@ -184,23 +183,18 @@ class ToastBot(Node):
 
         self.get_logger().info('Move 1 Called!')
 
-        # # Close the gripper on the toast
+        # Close the gripper on the toast
         self.get_logger().debug('Closing Gripper')
         await self.mpi.operateGripper(openGripper=False)
 
-        # # Move the toast to be directly over the plate
-        # ########## Set theses value to match real world
-        # ### Offset from lever to toast slot
-        # # slotOffsetX = 0.0
-        plateOffsetX = 0.0
-        plateOffsetY = 0.0
-        plateOffsetZ = 0.5
-        ##########
+        # Raise toast out of slot
+        toasterOffsetX = 0.175
+        toasterOffsetY = 0.01
+        toasterOffsetZ = 0.22
         goal = [
-            # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-            self.plate_pose.position.x + plateOffsetX,
-            self.plate_pose.position.y + plateOffsetY,
-            self.plate_pose.position.z + plateOffsetZ,
+            self.lever_pose.position.x + toasterOffsetX,
+            self.lever_pose.position.y + toasterOffsetY,
+            self.lever_pose.position.z + toasterOffsetZ,
             currentPose.pose.orientation.x,
             currentPose.pose.orientation.y,
             currentPose.pose.orientation.z,
@@ -210,19 +204,31 @@ class ToastBot(Node):
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
         await self.mpi.planPath(pathType, goal, execute=True)
 
-        # # Move the toast to be closer to the plate
-        # ########## Set theses value to match real world
-        # ### Offset from lever to toast slot
-        # # slotOffsetX = 0.0
-        plateOffsetX = 0.0
-        plateOffsetY = 0.025
-        plateOffsetZ = 0.175
-        ##########
+        # Move the toast to be directly over the plate
+        slideOffsetX = -0.11
+        slideOffsetY = -0.05
+        slideOffsetZ = 0.5
         goal = [
-            # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-            self.plate_pose.position.x + plateOffsetX,
-            self.plate_pose.position.y + plateOffsetY,
-            self.plate_pose.position.z + plateOffsetZ,
+            self.slide_pose.position.x + slideOffsetX,
+            self.slide_pose.position.y + slideOffsetY,
+            self.slide_pose.position.z + slideOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
+
+        # Move the toast to be closer to the plate
+        slideOffsetX = -0.11
+        slideOffsetY = -0.05
+        slideOffsetZ = 0.175
+        goal = [
+            self.slide_pose.position.x + slideOffsetX,
+            self.slide_pose.position.y + slideOffsetY,
+            self.slide_pose.position.z + slideOffsetZ,
             currentPose.pose.orientation.x,
             currentPose.pose.orientation.y,
             currentPose.pose.orientation.z,
@@ -236,19 +242,14 @@ class ToastBot(Node):
         self.get_logger().debug('Opening Gripper')
         await self.mpi.operateGripper(openGripper=True)
 
-        # # Guide the toast release to the plate
-        # ########## Set theses value to match real world
-        # ### Offset from lever to toast slot
-        # # slotOffsetX = 0.0
-        plateOffsetX = 0.0
-        plateOffsetY = 0.1
-        plateOffsetZ = 0.175
-        ##########
+        # Move to be high over the plate
+        slideOffsetX = -0.11
+        slideOffsetY = -0.05
+        slideOffsetZ = 0.5
         goal = [
-            # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-            self.plate_pose.position.x + plateOffsetX,
-            self.plate_pose.position.y + plateOffsetY,
-            self.plate_pose.position.z + plateOffsetZ,
+            self.slide_pose.position.x + slideOffsetX,
+            self.slide_pose.position.y + slideOffsetY,
+            self.slide_pose.position.z + slideOffsetZ,
             currentPose.pose.orientation.x,
             currentPose.pose.orientation.y,
             currentPose.pose.orientation.z,
@@ -258,7 +259,7 @@ class ToastBot(Node):
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
         await self.mpi.planPath(pathType, goal, execute=True)
 
-        # # Return to home position
+        # Return to home position
         goal = self.home_joints
         pathType = 'JOINT'
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
@@ -587,12 +588,9 @@ class ToastBot(Node):
             await self.mpi.planPath(pathType, goal, execute=True)
 
             # Move the bread to be directly over the toaster slot
-            ########## Set theses value to match real world
-            ### Offset from lever to toast slot
-            # slotOffsetX = 0.0
-            toasterOffsetX = 0.18
-            toasterOffsetY = 0.0005
-            toasterOffsetZ = 0.25
+            toasterOffsetX = 0.175
+            toasterOffsetY = 0.01
+            toasterOffsetZ = 0.235
             ##########
             goal = [
                 # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
@@ -612,9 +610,9 @@ class ToastBot(Node):
             ########## Set theses value to match real world
             ### Offset from lever to toast slot
             # slotOffsetX = 0.0
-            toasterOffsetX = 0.19
-            toasterOffsetY = 0.0005
-            toasterOffsetZ = 0.2
+            toasterOffsetX = 0.175
+            toasterOffsetY = 0.01
+            toasterOffsetZ = 0.20
             ##########
             goal = [
                 # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
@@ -651,12 +649,9 @@ class ToastBot(Node):
                 await self.mpi.operateGripper(openGripper=False)
 
                 # Move the gripper to be above lever
-                ########## Set theses value to match real world
-                # slice1OffsetY = 0.042
                 leverPrepOffsetX = 0.0
                 leverPrepOffsetY = 0.005
                 leverPrepOffsetZ = 0.201
-                ##########
 
                 currentPose = await self.mpi.getCurrentPose()
 
@@ -692,15 +687,10 @@ class ToastBot(Node):
                 await self.mpi.planPath(pathType, goal, execute=True)
 
                 # Move the gripper to be above lever
-                ########## Set theses value to match real world
-                # slice1OffsetY = 0.042
                 leverPrepOffsetX = 0.0
                 leverPrepOffsetY = 0.005
                 leverPrepOffsetZ = 0.201
-                ##########
-
                 currentPose = await self.mpi.getCurrentPose()
-
                 goal = [
                     self.lever_pose.position.x + leverPrepOffsetX,
                     self.lever_pose.position.y + leverPrepOffsetY,
@@ -811,9 +801,9 @@ class ToastBot(Node):
         ##########
         goal = [
             # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-            self.plate_pose.position.x + plateOffsetX,
-            self.plate_pose.position.y + plateOffsetY,
-            self.plate_pose.position.z + plateOffsetZ,
+            self.slide_pose.position.x + plateOffsetX,
+            self.slide_pose.position.y + plateOffsetY,
+            self.slide_pose.position.z + plateOffsetZ,
             currentPose.pose.orientation.x,
             currentPose.pose.orientation.y,
             currentPose.pose.orientation.z,
@@ -833,9 +823,9 @@ class ToastBot(Node):
         ##########
         goal = [
             # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-            self.plate_pose.position.x + plateOffsetX,
-            self.plate_pose.position.y + plateOffsetY,
-            self.plate_pose.position.z + plateOffsetZ,
+            self.slide_pose.position.x + plateOffsetX,
+            self.slide_pose.position.y + plateOffsetY,
+            self.slide_pose.position.z + plateOffsetZ,
             currentPose.pose.orientation.x,
             currentPose.pose.orientation.y,
             currentPose.pose.orientation.z,
@@ -859,9 +849,9 @@ class ToastBot(Node):
         ##########
         goal = [
             # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-            self.plate_pose.position.x + plateOffsetX,
-            self.plate_pose.position.y + plateOffsetY,
-            self.plate_pose.position.z + plateOffsetZ,
+            self.slide_pose.position.x + plateOffsetX,
+            self.slide_pose.position.y + plateOffsetY,
+            self.slide_pose.position.z + plateOffsetZ,
             currentPose.pose.orientation.x,
             currentPose.pose.orientation.y,
             currentPose.pose.orientation.z,
@@ -914,16 +904,16 @@ class ToastBot(Node):
         elif not self.leverPrevUp and self.lever_pose.position.z > 0.25:
             self.leverCurUp = True
 
-    def plate_pose_sub_cb(self, msg: Pose):
+    def slide_pose_sub_cb(self, msg: Pose):
         """
         Update pose of plate.
 
         :param msg: plate pose
         :type msg: Pose
         """
-        self.plate_pose = msg
+        self.slide_pose = msg
 
-    def knife_pose_sub_cb(self, msg: Pose):
+    def brush_pose_sub_cb(self, msg: Pose):
         """
         Update pose of knife.
 
@@ -931,6 +921,15 @@ class ToastBot(Node):
         :type msg: Pose
         """
         self.knife_pose = msg
+
+    def bowl_pose_sub_cb(self, msg: Pose):
+        """
+        Update pose of butter bowl.
+
+        :param msg: Bowl Pose
+        :type msg: Pose
+        """
+        self.bowl_pose = msg
 
     async def go_home(self, request, response):
         """Send robot home."""

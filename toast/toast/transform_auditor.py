@@ -60,9 +60,9 @@ class TransformAuditor(Node):
         if lever_tf:
             self.lever_pose_pub.publish(self.transform_to_pose(lever_tf))
         if brush_tf:
-            self.plate_pose_pub.publish(self.transform_to_pose(brush_tf))
+            self.brush_pose_pub.publish(self.transform_to_pose(brush_tf))
         if bowl_tf:
-            self.knife_pose_pub.publish(self.transform_to_pose(bowl_tf))
+            self.bowl_pose_pub.publish(self.transform_to_pose(bowl_tf))
         if slide_tf:
             self.slide_pose_pub.publish(self.transform_to_pose(slide_tf))
 
