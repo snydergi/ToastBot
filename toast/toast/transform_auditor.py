@@ -99,8 +99,9 @@ class TransformAuditor(Node):
             )
             return tf.transform
         except Exception as e:
-            self.get_logger().debug(f'Failed transform to {
-                targetFrameID} with exception: {e}')
+            self.get_logger().debug(
+                f'Failed transform to {targetFrameID} with exception: {e}'
+            )
         return None
 
 
