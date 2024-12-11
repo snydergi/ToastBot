@@ -8,8 +8,7 @@ from std_srvs.srv import Empty
 import math
 import numpy as np
 from geometry_msgs.msg import Pose, PoseStamped
-from rclpy.executors import MultiThreadedExecutor
-import concurrent.futures
+# import asyncio
 
 
 def quaternion_from_euler(ai, aj, ak):
@@ -51,7 +50,7 @@ def quaternion_from_euler(ai, aj, ak):
 class ToastBot(Node):
     """TODO."""
 
-    def __init__(self, executor):
+    def __init__(self):
         """TODO."""
         super().__init__('toast_bot')
         self.get_logger().info('ToastBot Started!')
@@ -113,10 +112,6 @@ class ToastBot(Node):
         self.leverCurUp = True
         self.postToastRan = False
 
-        
-        self.executor = executor
-        self.executor.add_node(self)
-
     async def timer_cb(self):
         """Run timer."""
         if self.loaf_tray_pose is not None:
@@ -125,39 +120,24 @@ class ToastBot(Node):
                self.postToastRan is False:
                 self.get_logger().info('Post Toasting Time!')
                 # self.loop.create_task(self.postToast_cb())
-                await self.postToast_cb()
+                future = self.executor.create_task(self.postToast_cb)
 
     async def postToast_cb(self):
         """TODO."""
         self.postToastRan = True
-        
-        
 
         self.get_logger().info('Post Toast Called!')
-        currentPose = None
+        currentPose: PoseStamped = await self.mpi.getCurrentPose()
+        
+        
 
-        if currentPose is None:
-            self.executor.spin_once(timeout_sec=0.1)
-            currentPose: PoseStamped = self.mpi.getCurrentPose()
-            self.get_logger().info('Calling!')
-            
-        self.get_logger().info('awaited current pose!')
-        # rclpy.spin_until_future_complete(currentPose_future)
+        self.get_logger().info('Got current pose!')
 
-        gripperState = None
-
-        self.get_logger().info('Opening the gripper!')
-        if gripperState is None:
-            self.executor.spin_once(timeout_sec=0.1)
-            await self.mpi.operateGripper(openGripper=True)
-            self.get_logger().info('Calling the gripper')
+        # Open the gripper for the toast
+        self.get_logger().debug('Opening Gripper')
+        await self.mpi.operateGripper(openGripper=True)
 
         self.get_logger().info('Opened gripper!')
-
-        # Move the bread to be directly over the toaster slot
-        ########## Set theses value to match real world
-        ### Offset from lever to toast slot
-        # slotOffsetX = 0.0
         toasterOffsetX = 0.0
         toasterOffsetY = 0.005
         toasterOffsetZ = 0.24
@@ -174,141 +154,117 @@ class ToastBot(Node):
         ]
         pathType = 'POSE'
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        move_over_plate =  None
+        await self.mpi.planPath(pathType, goal, execute=True)
 
-        while move_over_plate is None:
-            self.executor.spin_once(timeout_sec=0.1)
-            move_over_plate = self.mpi.planPath(pathType, goal, execute=True)
-        self.get_logger().info('awaited move over plate!')
+        # Move the bread to be directly over the toaster slot
+        ########## Set theses value to match real world
+        ### Offset from lever to toast slot
+        # slotOffsetX = 0.0
+        # toasterOffsetX = 0.0
+        # toasterOffsetY = 0.005
+        # toasterOffsetZ = 0.20
+
+        toasterOffsetX = 0.19
+        toasterOffsetY = 0.01
+        toasterOffsetZ = 0.15
+        ##########
+        goal = [
+            # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
+            self.lever_pose.position.x + toasterOffsetX,
+            self.lever_pose.position.y + toasterOffsetY,
+            self.lever_pose.position.z + toasterOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
 
         self.get_logger().info('Move 1 Called!')
 
-        # Move to grab toast from slot
-        ######### Set theses value to match real world
-        ## Offset from lever to toast slot
-        # slotOffsetX = 0.0
-        # toasterOffsetX = 0.19
-        # toasterOffsetY = 0.0005
-        # toasterOffsetZ = 0.165
-        # ##########
-        # goal = [
-        #     # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-        #     self.lever_pose.position.x + toasterOffsetX,
-        #     self.lever_pose.position.y + toasterOffsetY,
-        #     self.lever_pose.position.z + toasterOffsetZ,
-        #     currentPose.pose.orientation.x,
-        #     currentPose.pose.orientation.y,
-        #     currentPose.pose.orientation.z,
-        #     currentPose.pose.orientation.w
-        # ]
-        # pathType = 'POSE'
-        # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        # await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.05)
-
         # # Close the gripper on the toast
-        # self.get_logger().debug('Closing Gripper')
-        # await self.mpi.operateGripper(openGripper=False)
-
-        # # Move the toast to be directly over the toaster slot
-        # ########## Set theses value to match real world
-        # ### Offset from lever to toast slot
-        # # slotOffsetX = 0.0
-        # toasterOffsetX = 0.19
-        # toasterOffsetY = 0.0005
-        # toasterOffsetZ = 0.28
-        # ##########
-        # goal = [
-        #     # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-        #     self.lever_pose.position.x + toasterOffsetX,
-        #     self.lever_pose.position.y + toasterOffsetY,
-        #     self.lever_pose.position.z + toasterOffsetZ,
-        #     currentPose.pose.orientation.x,
-        #     currentPose.pose.orientation.y,
-        #     currentPose.pose.orientation.z,
-        #     currentPose.pose.orientation.w
-        # ]
-        # pathType = 'POSE'
-        # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        # await self.mpi.planPath(pathType, goal, execute=True)
+        self.get_logger().debug('Closing Gripper')
+        await self.mpi.operateGripper(openGripper=False)
 
         # # Move the toast to be directly over the plate
         # ########## Set theses value to match real world
         # ### Offset from lever to toast slot
         # # slotOffsetX = 0.0
-        # plateOffsetX = 0.0
-        # plateOffsetY = 0.0
-        # plateOffsetZ = 0.5
-        # ##########
-        # goal = [
-        #     # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-        #     self.plate_pose.position.x + plateOffsetX,
-        #     self.plate_pose.position.y + plateOffsetY,
-        #     self.plate_pose.position.z + plateOffsetZ,
-        #     currentPose.pose.orientation.x,
-        #     currentPose.pose.orientation.y,
-        #     currentPose.pose.orientation.z,
-        #     currentPose.pose.orientation.w
-        # ]
-        # pathType = 'POSE'
-        # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        # await self.mpi.planPath(pathType, goal, execute=True)
+        plateOffsetX = 0.0
+        plateOffsetY = 0.0
+        plateOffsetZ = 0.5
+        ##########
+        goal = [
+            # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
+            self.plate_pose.position.x + plateOffsetX,
+            self.plate_pose.position.y + plateOffsetY,
+            self.plate_pose.position.z + plateOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
 
         # # Move the toast to be closer to the plate
         # ########## Set theses value to match real world
         # ### Offset from lever to toast slot
         # # slotOffsetX = 0.0
-        # plateOffsetX = 0.0
-        # plateOffsetY = 0.025
-        # plateOffsetZ = 0.175
-        # ##########
-        # goal = [
-        #     # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-        #     self.plate_pose.position.x + plateOffsetX,
-        #     self.plate_pose.position.y + plateOffsetY,
-        #     self.plate_pose.position.z + plateOffsetZ,
-        #     currentPose.pose.orientation.x,
-        #     currentPose.pose.orientation.y,
-        #     currentPose.pose.orientation.z,
-        #     currentPose.pose.orientation.w
-        # ]
-        # pathType = 'POSE'
-        # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        # await self.mpi.planPath(pathType, goal, execute=True)
+        plateOffsetX = 0.0
+        plateOffsetY = 0.025
+        plateOffsetZ = 0.175
+        ##########
+        goal = [
+            # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
+            self.plate_pose.position.x + plateOffsetX,
+            self.plate_pose.position.y + plateOffsetY,
+            self.plate_pose.position.z + plateOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
 
         # # Open the gripper to drop the toast
-        # self.get_logger().debug('Opening Gripper')
-        # await self.mpi.operateGripper(openGripper=True)
+        self.get_logger().debug('Opening Gripper')
+        await self.mpi.operateGripper(openGripper=True)
 
         # # Guide the toast release to the plate
         # ########## Set theses value to match real world
         # ### Offset from lever to toast slot
         # # slotOffsetX = 0.0
-        # plateOffsetX = 0.0
-        # plateOffsetY = 0.1
-        # plateOffsetZ = 0.175
-        # ##########
-        # goal = [
-        #     # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
-        #     self.plate_pose.position.x + plateOffsetX,
-        #     self.plate_pose.position.y + plateOffsetY,
-        #     self.plate_pose.position.z + plateOffsetZ,
-        #     currentPose.pose.orientation.x,
-        #     currentPose.pose.orientation.y,
-        #     currentPose.pose.orientation.z,
-        #     currentPose.pose.orientation.w
-        # ]
-        # pathType = 'POSE'
-        # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        # await self.mpi.planPath(pathType, goal, execute=True)
+        plateOffsetX = 0.0
+        plateOffsetY = 0.1
+        plateOffsetZ = 0.175
+        ##########
+        goal = [
+            # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
+            self.plate_pose.position.x + plateOffsetX,
+            self.plate_pose.position.y + plateOffsetY,
+            self.plate_pose.position.z + plateOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
 
         # # Return to home position
-        # goal = self.home_joints
-        # pathType = 'JOINT'
-        # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        # await self.mpi.planPath(pathType, goal, execute=True)
-        # self.get_logger().info('All done!')
+        goal = self.home_joints
+        pathType = 'JOINT'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        await self.mpi.planPath(pathType, goal, execute=True)
+        self.get_logger().info('All done!')
         self.executor.shutdown()
-        return []
 
     async def setScene_callback(self, request, response):
         """
@@ -990,10 +946,7 @@ def main(args=None):
     """Run node."""
     # loop = asyncio.get_event_loop()
     rclpy.init(args=args)
-    executor = MultiThreadedExecutor()
-    
-    toast_bot = ToastBot(executor=executor)
-    
+    toast_bot = ToastBot()
     rclpy.spin(toast_bot)
     rclpy.shutdown()
     # pending = asyncio.all_tasks(loop=loop)
