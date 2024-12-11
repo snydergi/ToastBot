@@ -8,7 +8,8 @@ from std_srvs.srv import Empty
 import math
 import numpy as np
 from geometry_msgs.msg import Pose, PoseStamped
-# import asyncio
+from rclpy.executors import MultiThreadedExecutor
+import concurrent.futures
 
 
 def quaternion_from_euler(ai, aj, ak):
@@ -50,7 +51,7 @@ def quaternion_from_euler(ai, aj, ak):
 class ToastBot(Node):
     """TODO."""
 
-    def __init__(self):
+    def __init__(self, executor):
         """TODO."""
         super().__init__('toast_bot')
         self.get_logger().info('ToastBot Started!')
@@ -112,6 +113,10 @@ class ToastBot(Node):
         self.leverCurUp = True
         self.postToastRan = False
 
+        
+        self.executor = executor
+        self.executor.add_node(self)
+
     async def timer_cb(self):
         """Run timer."""
         if self.loaf_tray_pose is not None:
@@ -121,14 +126,26 @@ class ToastBot(Node):
                 self.get_logger().info('Post Toasting Time!')
                 # self.loop.create_task(self.postToast_cb())
                 await self.postToast_cb()
+    async def run_in_executor(self, func, *args):
+        """Run a blocking function in the executor."""
+        return await self.executor.run_coroutine(func(*args))
 
     async def postToast_cb(self):
         """TODO."""
         self.postToastRan = True
+        
+        
 
         self.get_logger().info('Post Toast Called!')
+        future = self.mpi.getCurrentPose()
+        currentPose = None
 
-        currentPose: PoseStamped = await self.mpi.getCurrentPose()
+        if currentPose is None:
+            self.executor.spin_once(timeout_sec=0.1)
+            currentPose: PoseStamped = self.mpi.getCurrentPose()
+
+        self.get_logger().info('awaited current pose!')
+        # rclpy.spin_until_future_complete(currentPose_future)
 
         self.get_logger().info('Got current pose!')
 
@@ -580,7 +597,8 @@ class ToastBot(Node):
             ]
             pathType = 'POSE'
             self.get_logger().info(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-            await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.25)
+            # await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.25)
+            await self.mpi.planPath(pathType, goal, execute=True)
 
             # Close the gripper
             self.get_logger().debug('Closing Gripper')
@@ -598,7 +616,8 @@ class ToastBot(Node):
             ]
             pathType = 'POSE'
             self.get_logger().info(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-            await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.05)
+            #await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.05)
+            await self.mpi.planPath(pathType, goal, execute=True)
 
             # Return to home position
             goal = self.home_joints
@@ -792,7 +811,8 @@ class ToastBot(Node):
         ]
         pathType = 'POSE'
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.05)
+        # await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.05)
+        await self.mpi.planPath(pathType, goal, execute=True)
 
         # Close the gripper on the toast
         self.get_logger().debug('Closing Gripper')
@@ -965,7 +985,10 @@ def main(args=None):
     """Run node."""
     # loop = asyncio.get_event_loop()
     rclpy.init(args=args)
-    toast_bot = ToastBot()
+    executor = MultiThreadedExecutor()
+    
+    toast_bot = ToastBot(executor=executor)
+    
     rclpy.spin(toast_bot)
     rclpy.shutdown()
     # pending = asyncio.all_tasks(loop=loop)
