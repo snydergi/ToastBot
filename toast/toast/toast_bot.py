@@ -279,6 +279,106 @@ class ToastBot(Node):
         await self.mpi.planPath(pathType, goal, execute=True)
         self.get_logger().info('All done!')
         self.executor.shutdown()
+        return []
+    
+    async def postToastButter_cb(self):
+        """Post toast callback with buttering."""
+        
+        self.get_logger().info('Post Toast Called!')
+        currentPose = None
+
+        if currentPose is None:
+            self.executor.spin_once(timeout_sec=0.1)
+            currentPose: PoseStamped = self.mpi.getCurrentPose()
+            self.get_logger().info('Calling!')
+            
+        ##### Post Tost goes here
+        
+        
+        gripperState = None
+        
+        # Open the gripper before moving
+        self.get_logger().info('Opening the gripper!')
+        if gripperState is None:
+            self.executor.spin_once(timeout_sec=0.1)
+            await self.mpi.operateGripper(openGripper=True)
+            self.get_logger().info('Calling the gripper')
+
+        self.get_logger().info('Opened gripper!')
+        
+        # Move from home position to the brush
+        ## Offsets from april tag to brush handle
+        brushOffsetX = 0.0
+        brushOffsetY = 0.07
+        brushOffsetZ = 0.150
+        
+        goal = [
+            self.brush_pose.position.x + brushOffsetX,
+            self.brush_pose.position.y + brushOffsetY,
+            self.brush_pose.position.z + brushOffsetZ,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        
+        gripperState = None
+        
+        # Close the gripper around the brush handle
+        self.get_logger().info('Closing the gripper!')
+        if gripperState is None:
+            self.executor.spin_once(timeout_sec=0.1)
+            await self.mpi.operateGripper(openGripper=False)
+            self.get_logger().info('Calling the gripper')
+
+        self.get_logger().info('Closed gripper!')
+        
+        # Move the brush off of its stand
+        currentPose = None
+
+        if currentPose is None:
+            self.executor.spin_once(timeout_sec=0.1)
+            currentPose: PoseStamped = self.mpi.getCurrentPose()
+            self.get_logger().info('Calling!')
+            
+        goal = [
+            currentPose.pose.position.x,
+            currentPose.pose.position.y - 0.125,
+            currentPose.pose.position.z,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        
+        
+        # Move directly up
+        currentPose = None
+
+        if currentPose is None:
+            self.executor.spin_once(timeout_sec=0.1)
+            currentPose: PoseStamped = self.mpi.getCurrentPose()
+            self.get_logger().info('Calling!')
+            
+        goal = [
+            currentPose.pose.position.x,
+            currentPose.pose.position.y,
+            currentPose.pose.position.z + 0.200,
+            currentPose.pose.orientation.x,
+            currentPose.pose.orientation.y,
+            currentPose.pose.orientation.z,
+            currentPose.pose.orientation.w
+        ]
+        pathType = 'POSE'
+        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+            
+        
+        
+
 
     async def setScene_callback(self, request, response):
         """
@@ -977,10 +1077,11 @@ class ToastBot(Node):
         self.slide_pose = msg
 
     def brush_pose_sub_cb(self, msg: Pose):
+    def brush_pose_sub_cb(self, msg: Pose):
         """
         Update pose of brush holder.
 
-        :param msg: Knife pose
+        :param msg: Brush pose
         :type msg: Pose
         """
         self.brush_pose = msg
