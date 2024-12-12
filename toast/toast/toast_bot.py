@@ -135,6 +135,7 @@ class ToastBot(Node):
                 self.get_logger().info('Post Toasting Time!')
                 # self.loop.create_task(self.postToast_cb())
                 self.executor.create_task(self.postToast_cb)
+                # future = self.executor.create_task(self.postToastButter_cb)
 
     async def postToast_cb(self):
         """Pull toast from toaster and place on slide."""
@@ -284,10 +285,7 @@ class ToastBot(Node):
         self.get_logger().info('Post Toast Called!')
         currentPose = None
 
-        if currentPose is None:
-            self.executor.spin_once(timeout_sec=0.1)
-            currentPose: PoseStamped = self.mpi.getCurrentPose()
-            self.get_logger().info('Calling!')
+        currentPose: PoseStamped = await self.mpi.getCurrentPose()
 
         ##### Post Tost goes here
 
@@ -295,81 +293,73 @@ class ToastBot(Node):
 
         # Open the gripper before moving
         self.get_logger().info('Opening the gripper!')
-        if gripperState is None:
-            self.executor.spin_once(timeout_sec=0.1)
-            await self.mpi.operateGripper(openGripper=True)
-            self.get_logger().info('Calling the gripper')
+        await self.mpi.operateGripper(openGripper=True)
 
         self.get_logger().info('Opened gripper!')
 
-        # Move from home position to the brush
+        # Move from prep position to the brush
         ## Offsets from april tag to brush handle
-        brushOffsetX = 0.0
-        brushOffsetY = 0.07
-        brushOffsetZ = 0.150
+        brushOffsetX = -0.05
+        brushOffsetY = -0.03
+        brushPrepOffsetZ = 0.24
+
+        quat = quaternion_from_euler(0.0, np.pi, np.pi / 2)
 
         goal = [
             self.brush_pose.position.x + brushOffsetX,
             self.brush_pose.position.y + brushOffsetY,
-            self.brush_pose.position.z + brushOffsetZ,
-            currentPose.pose.orientation.x,
-            currentPose.pose.orientation.y,
-            currentPose.pose.orientation.z,
-            currentPose.pose.orientation.w
+            self.brush_pose.position.z + brushPrepOffsetZ,
+            quat[0],
+            quat[1],
+            quat[2],
+            quat[3],
         ]
         pathType = 'POSE'
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-
-        gripperState = None
+        await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.2)
 
         # Close the gripper around the brush handle
         self.get_logger().info('Closing the gripper!')
-        if gripperState is None:
-            self.executor.spin_once(timeout_sec=0.1)
-            await self.mpi.operateGripper(openGripper=False)
-            self.get_logger().info('Calling the gripper')
+        await self.mpi.operateGripper(openGripper=False)
 
-        self.get_logger().info('Closed gripper!')
+        # # Move the brush off of its stand
+        # currentPose = None
 
-        # Move the brush off of its stand
-        currentPose = None
+        # currentPose: PoseStamped = self.mpi.getCurrentPose()
 
-        if currentPose is None:
-            self.executor.spin_once(timeout_sec=0.1)
-            currentPose: PoseStamped = self.mpi.getCurrentPose()
-            self.get_logger().info('Calling!')
+        # goal = [
+        #     currentPose.pose.position.x,
+        #     currentPose.pose.position.y - 0.125,
+        #     currentPose.pose.position.z,
+        #     currentPose.pose.orientation.x,
+        #     currentPose.pose.orientation.y,
+        #     currentPose.pose.orientation.z,
+        #     currentPose.pose.orientation.w
+        # ]
+        # pathType = 'POSE'
+        # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
 
-        goal = [
-            currentPose.pose.position.x,
-            currentPose.pose.position.y - 0.125,
-            currentPose.pose.position.z,
-            currentPose.pose.orientation.x,
-            currentPose.pose.orientation.y,
-            currentPose.pose.orientation.z,
-            currentPose.pose.orientation.w
-        ]
-        pathType = 'POSE'
-        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        # # Move directly up
+        # currentPose = None
 
-        # Move directly up
-        currentPose = None
+        # if currentPose is None:
+        #     self.executor.spin_once(timeout_sec=0.1)
+        #     currentPose: PoseStamped = self.mpi.getCurrentPose()
+        #     self.get_logger().info('Calling!')
 
-        if currentPose is None:
-            self.executor.spin_once(timeout_sec=0.1)
-            currentPose: PoseStamped = self.mpi.getCurrentPose()
-            self.get_logger().info('Calling!')
-
-        goal = [
-            currentPose.pose.position.x,
-            currentPose.pose.position.y,
-            currentPose.pose.position.z + 0.200,
-            currentPose.pose.orientation.x,
-            currentPose.pose.orientation.y,
-            currentPose.pose.orientation.z,
-            currentPose.pose.orientation.w
-        ]
-        pathType = 'POSE'
-        self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        # goal = [
+        #     currentPose.pose.position.x,
+        #     currentPose.pose.position.y,
+        #     currentPose.pose.position.z + 0.200,
+        #     currentPose.pose.orientation.x,
+        #     currentPose.pose.orientation.y,
+        #     currentPose.pose.orientation.z,
+        #     currentPose.pose.orientation.w
+        # ]
+        # pathType = 'POSE'
+        # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
+        self.executor.shutdown()
+        return []
 
     async def setScene_callback(self, request, response):
         """
@@ -1098,14 +1088,11 @@ class ToastBot(Node):
 
 def main(args=None):
     """Run node."""
-    # loop = asyncio.get_event_loop()
     rclpy.init(args=args)
     toast_bot = ToastBot()
     rclpy.spin(toast_bot)
     rclpy.shutdown()
-    # pending = asyncio.all_tasks(loop=loop)
-    # loop.run_until_complete(asyncio.gather(*pending))
-    # loop.close()
+
 
 
 if __name__ == '__main__':
