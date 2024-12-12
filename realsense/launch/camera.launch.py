@@ -32,6 +32,7 @@ def generate_launch_description():
                 'depth_module.profile': '1280x720x30',
                 'rgb_camera.profile': '1280x720x30',
                 'enable_sync': 'true',
+                'align_depth.enable': 'true',
             }.items()
         ),
         Node(
