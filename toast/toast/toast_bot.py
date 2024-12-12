@@ -588,7 +588,7 @@ class ToastBot(Node):
             # Move to press lever
             leverPressOffsetX = 0.0
             leverPressOffsetY = 0.005
-            leverPressOffsetZ = 0.045
+            leverPressOffsetZ = 0.06
 
             goal = [
                 self.lever_pose.position.x + leverPressOffsetX,
@@ -656,7 +656,7 @@ class ToastBot(Node):
             # Move the gripper to be above a slice of toast
             #       Set theses value to match real world
             # slice1OffsetY = 0.042
-            sliceOffsetY = 0.0
+            sliceOffsetY = 0.025
             sliceOffsetZ = 0.0
             object_approach_z_offset = 0.075
             ##########
@@ -809,7 +809,7 @@ class ToastBot(Node):
                 # Move to press lever
                 leverPressOffsetX = 0.0
                 leverPressOffsetY = 0.005
-                leverPressOffsetZ = 0.048
+                leverPressOffsetZ = 0.06
 
                 goal = [
                     self.lever_pose.position.x + leverPressOffsetX,
