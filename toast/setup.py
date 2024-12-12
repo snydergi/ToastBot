@@ -20,7 +20,7 @@ setup(
     zip_safe=True,
     maintainer='gis',
     maintainer_email='grasnyder2001@gmail.com',
-    description='TODO: Package description',
+    description='Make toast with the Emika Franka Panda robot.',
     license='GPLv3',
     tests_require=['pytest'],
     entry_points={

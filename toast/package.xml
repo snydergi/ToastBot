@@ -3,7 +3,7 @@
 <package format="3">
   <name>toast</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Make toast with the Emika Franka Panda robot.</description>
   <maintainer email="grasnyder2001@gmail.com">gis</maintainer>
   <license>GPLv3</license>
 
