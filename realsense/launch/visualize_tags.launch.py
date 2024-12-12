@@ -88,7 +88,7 @@ def generate_launch_description():
         # AprilTags detection node
         Node(
             package='realsense',
-            executable='visualizeFeed',
+            executable='tag_visualizer',
             output='screen',
         ),
         # Node(

@@ -1,14 +1,17 @@
-"""TODO."""
+"""
+Contains publishers and TF listener to update April Tag poses.
+
+PUBLISHERS:
+  + '/toast/loafTrayPose' (geometry_msgs/msg/Pose) - Pose of the loaf tray April Tag
+  + '/toast/leverPose' (geometry_msgs/msg/Pose) - Pose of the toaster lever April Tag
+  + '/toast/slidePose' (geometry_msgs/msg/Pose) - Pose of the slide April Tag
+  + '/toast/brushPose' (geometry_msgs/msg/Pose) - Pose of the brush April Tag
+  + '/toast/bowlPose' (geometry_msgs/msg/Pose) - Pose of the butter bowl April Tag
+"""
 
 import rclpy
 from rclpy.node import Node
 import rclpy.time
-from rclpy.qos import (
-    QoSDurabilityPolicy,
-    QoSHistoryPolicy,
-    QoSProfile,
-    QoSReliabilityPolicy,
-)
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from geometry_msgs.msg import Pose, Transform
@@ -21,35 +24,44 @@ class TransformAuditor(Node):
         """Initialize node."""
         super().__init__('transform_auditor')
         self.get_logger().debug('Transform Auditor Started!')
-        # pubQoS = QoSProfile(
-        #     history=QoSHistoryPolicy.KEEP_LAST,
-        #     depth=10,
-        #     durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
-        #     reliability=QoSReliabilityPolicy.RELIABLE,
-        # )
         pubQoS = 10
         self.buffer = Buffer()
         self.tf_listener = TransformListener(self.buffer, self)
-        self.loaf_tray_pose_pub = self.create_publisher(Pose, '/toast/loafTrayPose', pubQoS)
-        self.lever_pose_pub = self.create_publisher(Pose, '/toast/leverPose', pubQoS)
-        self.plate_pose_pub = self.create_publisher(Pose, '/toast/platePose', pubQoS)
-        self.knife_pose_pub = self.create_publisher(Pose, '/toast/knifePose', pubQoS)
+        self.loaf_tray_pose_pub = self.create_publisher(
+            Pose, '/toast/loafTrayPose', pubQoS
+        )
+        self.lever_pose_pub = self.create_publisher(
+            Pose, '/toast/leverPose', pubQoS
+        )
+        self.brush_pose_pub = self.create_publisher(
+            Pose, '/toast/brushPose', pubQoS
+        )
+        self.bowl_pose_pub = self.create_publisher(
+            Pose, '/toast/bowlPose', pubQoS
+        )
+        self.slide_pose_pub = self.create_publisher(
+            Pose, '/toast/slidePose', pubQoS
+        )
         self.timer = self.create_timer(1.0, self.timer_callback)
 
     def timer_callback(self):
         """Request transforms and publish if not none."""
         loaf_tray_tf = self.get_transform('loaf_tray')
         lever_tf = self.get_transform('lever')
-        plate_tf = self.get_transform('plate')
-        knife_tf = self.get_transform('knife_holder')
+        brush_tf = self.get_transform('brush')
+        bowl_tf = self.get_transform('bowl')
+        slide_tf = self.get_transform('slide')
         if loaf_tray_tf:
-            self.loaf_tray_pose_pub.publish(self.transform_to_pose(loaf_tray_tf))
+            self.loaf_tray_pose_pub.publish(
+                self.transform_to_pose(loaf_tray_tf))
         if lever_tf:
             self.lever_pose_pub.publish(self.transform_to_pose(lever_tf))
-        if plate_tf:
-            self.plate_pose_pub.publish(self.transform_to_pose(plate_tf))
-        if knife_tf:
-            self.knife_pose_pub.publish(self.transform_to_pose(knife_tf))
+        if brush_tf:
+            self.brush_pose_pub.publish(self.transform_to_pose(brush_tf))
+        if bowl_tf:
+            self.bowl_pose_pub.publish(self.transform_to_pose(bowl_tf))
+        if slide_tf:
+            self.slide_pose_pub.publish(self.transform_to_pose(slide_tf))
 
     def transform_to_pose(self, tf: Transform) -> Pose:
         """
@@ -84,7 +96,9 @@ class TransformAuditor(Node):
             )
             return tf.transform
         except Exception as e:
-            self.get_logger().debug(f'Failed transform to {targetFrameID} with exception: {e}')
+            self.get_logger().debug(
+                f'Failed transform to {targetFrameID} with exception: {e}'
+            )
         return None
 
 
