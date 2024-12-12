@@ -8,7 +8,6 @@ from std_srvs.srv import Empty
 import math
 import numpy as np
 from geometry_msgs.msg import Pose, PoseStamped
-# import asyncio
 
 
 def quaternion_from_euler(ai, aj, ak):
@@ -109,9 +108,7 @@ class ToastBot(Node):
         self.initiateToasting = self.create_service(
             Empty, '/initiateToasting', self.initiateToasting_cb, callback_group=client_cb_group
         )
-        # self.postToast = self.create_service(
-        #     Empty, '/postToast', self.postToast_cb, callback_group=client_cb_group
-        # )
+
         # Poses of all the objects in our scenes
         self.loaf_tray_pose = None
         self.lever_pose = None
@@ -119,6 +116,7 @@ class ToastBot(Node):
         self.brush_pose = None
         self.bowl_pose = None
         self.slide_pose = None
+
         # Logic Variables
         self.cartesianAngle = quaternion_from_euler(-np.pi, 0, -np.pi / 4)
         self.leverPrevUp = True
@@ -135,11 +133,10 @@ class ToastBot(Node):
                self.leverCurUp is True and \
                self.postToastRan is False:
                 self.get_logger().info('Post Toasting Time!')
-                # self.loop.create_task(self.postToast_cb())
                 future = self.executor.create_task(self.postToast_cb)
 
     async def postToast_cb(self):
-        """TODO."""
+        """Pull toast from toaster and place on slide."""
         self.postToastRan = True
 
         self.get_logger().info('Post Toast Called!')
@@ -280,10 +277,9 @@ class ToastBot(Node):
         self.get_logger().info('All done!')
         self.executor.shutdown()
         return []
-    
+
     async def postToastButter_cb(self):
-        """Post toast callback with buttering."""
-        
+        """Remove toast from toaster, place on slide, and butter."""
         self.get_logger().info('Post Toast Called!')
         currentPose = None
 
@@ -291,12 +287,11 @@ class ToastBot(Node):
             self.executor.spin_once(timeout_sec=0.1)
             currentPose: PoseStamped = self.mpi.getCurrentPose()
             self.get_logger().info('Calling!')
-            
+
         ##### Post Tost goes here
-        
-        
+
         gripperState = None
-        
+
         # Open the gripper before moving
         self.get_logger().info('Opening the gripper!')
         if gripperState is None:
@@ -305,13 +300,13 @@ class ToastBot(Node):
             self.get_logger().info('Calling the gripper')
 
         self.get_logger().info('Opened gripper!')
-        
+
         # Move from home position to the brush
         ## Offsets from april tag to brush handle
         brushOffsetX = 0.0
         brushOffsetY = 0.07
         brushOffsetZ = 0.150
-        
+
         goal = [
             self.brush_pose.position.x + brushOffsetX,
             self.brush_pose.position.y + brushOffsetY,
@@ -323,9 +318,9 @@ class ToastBot(Node):
         ]
         pathType = 'POSE'
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        
+
         gripperState = None
-        
+
         # Close the gripper around the brush handle
         self.get_logger().info('Closing the gripper!')
         if gripperState is None:
@@ -334,7 +329,7 @@ class ToastBot(Node):
             self.get_logger().info('Calling the gripper')
 
         self.get_logger().info('Closed gripper!')
-        
+
         # Move the brush off of its stand
         currentPose = None
 
@@ -342,7 +337,7 @@ class ToastBot(Node):
             self.executor.spin_once(timeout_sec=0.1)
             currentPose: PoseStamped = self.mpi.getCurrentPose()
             self.get_logger().info('Calling!')
-            
+
         goal = [
             currentPose.pose.position.x,
             currentPose.pose.position.y - 0.125,
@@ -354,8 +349,7 @@ class ToastBot(Node):
         ]
         pathType = 'POSE'
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-        
-        
+
         # Move directly up
         currentPose = None
 
@@ -363,7 +357,7 @@ class ToastBot(Node):
             self.executor.spin_once(timeout_sec=0.1)
             currentPose: PoseStamped = self.mpi.getCurrentPose()
             self.get_logger().info('Calling!')
-            
+
         goal = [
             currentPose.pose.position.x,
             currentPose.pose.position.y,
@@ -375,10 +369,6 @@ class ToastBot(Node):
         ]
         pathType = 'POSE'
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-            
-        
-        
-
 
     async def setScene_callback(self, request, response):
         """
@@ -1077,7 +1067,6 @@ class ToastBot(Node):
         self.slide_pose = msg
 
     def brush_pose_sub_cb(self, msg: Pose):
-    def brush_pose_sub_cb(self, msg: Pose):
         """
         Update pose of brush holder.
 
@@ -1094,15 +1083,6 @@ class ToastBot(Node):
         :type msg: Pose
         """
         self.bowl_pose = msg
-
-    def slide_pose_sub_cb(self, msg: Pose):
-        """
-        Update pose of slide.
-
-        :param msg: Slide pose
-        :type msg: Pose
-        """
-        self.slide_pose = msg
 
     async def go_home(self, request, response):
         """Send robot home."""
