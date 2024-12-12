@@ -7,7 +7,6 @@ SUBSCRIBERS:
   + '/toast/slidePose' (geometry_msgs/msg/Pose) - Pose of the slide April Tag
   + '/toast/brushPose' (geometry_msgs/msg/Pose) - Pose of the brush April Tag
   + '/toast/bowlPose' (geometry_msgs/msg/Pose) - Pose of the butter bowl April Tag
-  + '/toast/slidePose' (geometry_msgs/msg/Pose) - Pose of the slide April Tag
 
 SERVICES:
   + '/buildScene' (std_srvs/srv/Empty) - Create scene collision objects
