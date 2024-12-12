@@ -179,7 +179,7 @@ class ToastBot(Node):
         toasterOffsetX = 0.0
         toasterOffsetY = 0.005
         toasterOffsetZ = 0.24
-        ##########
+        
         goal = [
             # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
             self.lever_pose.position.x + toasterOffsetX,
@@ -194,13 +194,6 @@ class ToastBot(Node):
         self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
         await self.mpi.planPath(pathType, goal, execute=True)
 
-        # Move the bread to be directly over the toaster slot
-        # Set theses value to match real world
-        # Offset from lever to toast slot
-        # slotOffsetX = 0.0
-        # toasterOffsetX = 0.0
-        # toasterOffsetY = 0.005
-        # toasterOffsetZ = 0.20
 
         toasterOffsetX = 0.175
         toasterOffsetY = 0.01
@@ -344,42 +337,6 @@ class ToastBot(Node):
         self.get_logger().info('Closing the gripper!')
         await self.mpi.operateGripper(openGripper=False)
 
-        # # Move the brush off of its stand
-        # currentPose = None
-
-        # currentPose: PoseStamped = self.mpi.getCurrentPose()
-
-        # goal = [
-        #     currentPose.pose.position.x,
-        #     currentPose.pose.position.y - 0.125,
-        #     currentPose.pose.position.z,
-        #     currentPose.pose.orientation.x,
-        #     currentPose.pose.orientation.y,
-        #     currentPose.pose.orientation.z,
-        #     currentPose.pose.orientation.w
-        # ]
-        # pathType = 'POSE'
-        # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
-
-        # # Move directly up
-        # currentPose = None
-
-        # if currentPose is None:
-        #     self.executor.spin_once(timeout_sec=0.1)
-        #     currentPose: PoseStamped = self.mpi.getCurrentPose()
-        #     self.get_logger().info('Calling!')
-
-        # goal = [
-        #     currentPose.pose.position.x,
-        #     currentPose.pose.position.y,
-        #     currentPose.pose.position.z + 0.200,
-        #     currentPose.pose.orientation.x,
-        #     currentPose.pose.orientation.y,
-        #     currentPose.pose.orientation.z,
-        #     currentPose.pose.orientation.w
-        # ]
-        # pathType = 'POSE'
-        # self.get_logger().debug(f'MPI PlanPath pT:{pathType} \n goal:{goal}')
         self.executor.shutdown()
         return []
 
