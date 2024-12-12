@@ -21,6 +21,69 @@ git submodule update
 
 [YOLO ROS Support](https://github.com/mgonzs13/yolo_ros)
 
+# Calling Services
+
+## setScene
+```bash
+ros2 service call /buildScene
+```
+Creates the scene with the objects in simulation so planned paths account for them.
+
+## breadToToaster
+```bash
+ros2 service call /breadToToaster
+```
+Bread from Loaf Tray to Toaster Slot 0
+
+## actuateLever
+```bash
+ros2 service call /actuateLever
+```
+Press the Lever on the Toaster until it clicks.
+
+## goHome
+```bash
+ros2 service call /gohome
+```
+Sends the Franka to the Home Position
+
+## toastToPlate
+```bash
+ros2 service call /toastToPlate
+```
+Grabs from toaster slot 0 and plates it
+
+## openGripper
+```bash
+ros2 service call /openGripper
+```
+Opens the gripper
+
+## closeGripper
+```bash
+ros2 service call /closeGripper
+```
+Closes the gripper
+
+## initiateToasting
+```bash
+ros2 service call /initiateToasting
+```
+1. Opens the gripper
+2. Go to Loaf Tray
+3. Close Gripper
+4. Lift Bread out of Loaf Tray
+5. Go to Home Position
+6. Move Bread directly over Toaster Slot 0
+7. Move Bread into slot
+8. Open the gripper
+9. Go to Home Position
+10. Waits for lever pose to exist
+11. Move above Lever
+12. Press Lever
+13. Move up above lever
+14. Go to Home Position
+
 # CAD List
 Each part should have a location for an april tag to be attached to it so we can locate it with the camera. Since we know the geometry of all the fixtures and parts we can hard-code those transformations and dynamically locate their respective tags.
 ## Bread End-Effector
