@@ -136,7 +136,7 @@ class ToastBot(Node):
                self.postToastRan is False:
                 self.get_logger().info('Post Toasting Time!')
                 # self.loop.create_task(self.postToast_cb())
-                future = self.executor.create_task(self.postToast_cb)
+                self.executor.create_task(self.postToast_cb)
 
     async def postToast_cb(self):
         """TODO."""
@@ -462,7 +462,8 @@ class ToastBot(Node):
         return response
 
     async def actuateLever_callback(self, request, response):
-        """Move a piece of bread from the loaf holder to the toaster.
+        """
+        Move a piece of bread from the loaf holder to the toaster.
 
         This function moves the gripper to the toaster lever and actuates it.
 
@@ -812,7 +813,7 @@ class ToastBot(Node):
 
         # Move to grab toast from slot
         # Offset from lever to toast slot
-        slotOffsetX = 0.0
+        # slotOffsetX = 0.0
         toasterOffsetX = 0.19
         toasterOffsetY = 0.0005
         toasterOffsetZ = 0.165
