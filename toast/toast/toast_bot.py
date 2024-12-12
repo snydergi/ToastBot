@@ -63,15 +63,7 @@ class ToastBot(Node):
 
         client_cb_group = MutuallyExclusiveCallbackGroup()
         self.mpi = MotionPlanningInterface(self)
-        self.setScene = self.create_service(Empty, '/buildScene', self.setScene_callback,
-                                            callback_group=client_cb_group)
-        self.breadToToaster = self.create_service(
-            Empty, '/breadToToaster', self.breadToToaster_callback, callback_group=client_cb_group
-        )
-        self.actuateLever = self.create_service(
-            Empty, '/actuateLever', self.actuateLever_callback, callback_group=client_cb_group
-        )
-        self.breadNumber = 1  # So the franka picks the correct piece of bread
+        # Subscribers
         self.loaf_tray_pose_sub = self.create_subscription(
             Pose, '/toast/loafTrayPose', self.loaf_tray_pose_sub_cb, 10
         )
@@ -90,6 +82,18 @@ class ToastBot(Node):
         self.slide_pose_sub = self.create_subscription(
             Pose, '/toast/slidePose', self.slide_pose_sub_cb, 10
         )
+        # Services
+        self.setScene = self.create_service(
+            Empty, '/buildScene', self.setScene_callback,
+            callback_group=client_cb_group
+        )
+        self.breadToToaster = self.create_service(
+            Empty, '/breadToToaster', self.breadToToaster_callback, callback_group=client_cb_group
+        )
+        self.actuateLever = self.create_service(
+            Empty, '/actuateLever', self.actuateLever_callback, callback_group=client_cb_group
+        )
+        self.breadNumber = 1  # So the franka picks the correct piece of bread
         self.goHome = self.create_service(
             Empty, '/gohome', self.go_home, callback_group=client_cb_group
         )
@@ -108,17 +112,21 @@ class ToastBot(Node):
         # self.postToast = self.create_service(
         #     Empty, '/postToast', self.postToast_cb, callback_group=client_cb_group
         # )
-        self.timer = self.create_timer(1.0, self.timer_cb)
+        # Poses of all the objects in our scenes
         self.loaf_tray_pose = None
         self.lever_pose = None
         self.plate_pose = None
         self.brush_pose = None
         self.bowl_pose = None
         self.slide_pose = None
+        # Logic Variables
         self.cartesianAngle = quaternion_from_euler(-np.pi, 0, -np.pi / 4)
         self.leverPrevUp = True
         self.leverCurUp = True
         self.postToastRan = False
+
+        # Create the timer
+        self.timer = self.create_timer(1.0, self.timer_cb)
 
     async def timer_cb(self):
         """Run timer."""
@@ -555,7 +563,7 @@ class ToastBot(Node):
 
     async def initiateToasting_cb(self, request, response):
         """TODO."""
-        self.get_logger().info('BreadToToaster Callback called!')
+        self.get_logger().info('InitiateToasting Callback called!')
         if self.breadNumber > 4:
             self.get_logger().warn('All out of bread!')
         elif self.loaf_tray_pose is not None:
