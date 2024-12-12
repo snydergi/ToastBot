@@ -1,14 +1,17 @@
-"""TODO."""
+"""
+Contains publishers and TF listener to update April Tag poses.
+
+PUBLISHERS:
+  + '/toast/loafTrayPose' (geometry_msgs/msg/Pose) - Pose of the loaf tray April Tag
+  + '/toast/leverPose' (geometry_msgs/msg/Pose) - Pose of the toaster lever April Tag
+  + '/toast/slidePose' (geometry_msgs/msg/Pose) - Pose of the slide April Tag
+  + '/toast/brushPose' (geometry_msgs/msg/Pose) - Pose of the brush April Tag
+  + '/toast/bowlPose' (geometry_msgs/msg/Pose) - Pose of the butter bowl April Tag
+"""
 
 import rclpy
 from rclpy.node import Node
 import rclpy.time
-from rclpy.qos import (
-    QoSDurabilityPolicy,
-    QoSHistoryPolicy,
-    QoSProfile,
-    QoSReliabilityPolicy,
-)
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from geometry_msgs.msg import Pose, Transform
@@ -21,12 +24,6 @@ class TransformAuditor(Node):
         """Initialize node."""
         super().__init__('transform_auditor')
         self.get_logger().debug('Transform Auditor Started!')
-        # pubQoS = QoSProfile(
-        #     history=QoSHistoryPolicy.KEEP_LAST,
-        #     depth=10,
-        #     durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
-        #     reliability=QoSReliabilityPolicy.RELIABLE,
-        # )
         pubQoS = 10
         self.buffer = Buffer()
         self.tf_listener = TransformListener(self.buffer, self)
