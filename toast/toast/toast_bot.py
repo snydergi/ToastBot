@@ -701,8 +701,7 @@ class ToastBot(Node):
             self.get_logger().info(
                 f'MPI PlanPath pT:{pathType} \n goal:{goal}'
             )
-            # await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.05)
-            await self.mpi.planPath(pathType, goal, execute=True)
+            await self.mpi.planPath(pathType, goal, execute=True, velocity_scaling=0.05)
 
             # Return to home position
             goal = self.home_joints
@@ -718,10 +717,9 @@ class ToastBot(Node):
             # slotOffsetX = 0.0
             toasterOffsetX = 0.18
             toasterOffsetY = 0.0005
-            toasterOffsetZ = 0.25
+            toasterOffsetZ = 0.26
             ##########
             goal = [
-                # self.lever_pose.position.x + toasterOffsetX + self.breadNumber % 2 * slotOffsetX,
                 self.lever_pose.position.x + toasterOffsetX,
                 self.lever_pose.position.y + toasterOffsetY,
                 self.lever_pose.position.z + toasterOffsetZ,
